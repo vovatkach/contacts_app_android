@@ -1,4 +1,4 @@
-package com.example.mukola.contactapplication.view.acitivities.mainScreen.adapter;
+package com.example.mukola.contactapplication.view.acitivities.adapter;
 
 
 import android.app.Activity;
@@ -29,7 +29,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     public interface OnItemClicked {
         void onCallClick(String number);
         void onMessageClick(String number);
-
+        void onUserClick(int position);
     }
 
     public ContactListAdapter(ArrayList<Person> itemsData,Activity activity) {
@@ -72,6 +72,20 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
             @Override
             public void onClick(View v) {
                 onClick.onMessageClick(itemsData.get(position).getPhoneNumbers().get(0).getCanonicalForm());
+            }
+        });
+
+        viewHolder.name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.onUserClick(position);
+            }
+        });
+
+        viewHolder.photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.onUserClick(position);
             }
         });
 

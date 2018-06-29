@@ -1,41 +1,36 @@
 package com.example.mukola.contactapplication.view.acitivities.mainScreen;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
-import com.example.mukola.contactapplication.view.acitivities.mainScreen.adapter.ContactListAdapter;
+import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
+import com.example.mukola.contactapplication.view.fragments.allContacts.AllContactsFragment;
+import com.example.mukola.contactapplication.view.fragments.favoriteContacts.FavoriteContactsFragment;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -47,45 +42,50 @@ import com.google.api.services.people.v1.PeopleScopes;
 import com.google.api.services.people.v1.model.Person;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
 public class MainScreenActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks, ContactListAdapter.OnItemClicked, MSContract.IMainScreenView {
+        implements NavigationView.OnNavigationItemSelectedListener, MSContract.IMainScreenView,
+        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.ConnectionCallbacks,AllContactsFragment.OnAllContactsFragmentInteractionListener,
+        FavoriteContactsFragment.OnFavoriteContactsFragmentInteractionListener
+{
 
-    @BindView(R.id.rv_contacts_ms)
-    RecyclerView list;
 
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
+    @NonNull
+    private final int RC_INTENT = 200;
 
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    @NonNull
+    private final int RC_API_CHECK = 100;
 
     @Nullable
     private MSContract.IMainScreenPresenter presenter;
 
+    @NonNull
     private User user;
 
-    final int RC_INTENT = 200;
+    @Nullable
+    private ArrayList<Person> contacts;
 
-    final int RC_API_CHECK = 100;
+    private TabLayout tabLayout;
 
-    private String pNumber;
+    private ViewPager viewPager;
+
+    ViewPagerAdapter adapter;
+
+    @NonNull
+    private String authCode;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,32 +106,40 @@ public class MainScreenActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        presenter = new MSPresenter(this, this);
+        getSupportActionBar().hide();
+
+        presenter = new MSPresenter(this,this);
 
         user = getData();
-        Log.d("Logined users email - ", user.getEmail());
 
         presenter.InitGoogleSignIn();
 
         presenter.getIdToken();
+
+
+        Log.d("Logined users email - ", user.getEmail());
     }
 
     @Override
-    public void getIdToken() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(presenter.getmGoogleApiClient());
-        startActivityForResult(signInIntent, RC_INTENT);
+    public void initViewPager(ArrayList<Person> list){
+
+        contacts = list;
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    private void setupViewPager(ViewPager viewPager) {
 
-        switch (requestCode) {
-            case RC_INTENT:
-                presenter.verification(data);
-                break;
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        }
+        presenter.openAllContacts();
+
+        presenter.openFavorite(user.getId());
+
+        viewPager.setAdapter(adapter);
     }
 
     @Override
@@ -192,16 +200,17 @@ public class MainScreenActivity extends AppCompatActivity
         return true;
     }
 
-    private User getData() {
-        Bundle extras = getIntent().getExtras();
-        User user = null;
+//    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("ON ACTIVITULT","AAAAAA");
 
-        if (extras != null) {
-            user = (User) extras.getSerializable("user");
+        switch (requestCode) {
+            case RC_INTENT:
+                presenter.verification(data);
+                break;
         }
-        return user;
     }
-
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
@@ -223,77 +232,8 @@ public class MainScreenActivity extends AppCompatActivity
     }
 
     @Override
-    public void setContactList(List<Person> contacts) {
-
-        list.setLayoutManager(new LinearLayoutManager(this));
-
-        LinearLayoutManager lm = new LinearLayoutManager(this);
-        lm.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(lm);
-
-        ArrayList<Person> l = new ArrayList<>(contacts);
-        ContactListAdapter mAdapter = new ContactListAdapter(l, this);
-        // set adapter
-        mAdapter.setOnClick(this);
-
-        progressBar.setVisibility(View.GONE);
-
-        if (mAdapter.getItemCount() == 0) {
-            showToast(getString(R.string.no_contact));
-        } else {
-            list.setAdapter(mAdapter);
-        }
-
-        // set item animator to DefaultAnimator
-        list.setItemAnimator(new DefaultItemAnimator());
-    }
-
-    @Override
-    public void setProgressBarVisible() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void makeCall(final String number) {
-        pNumber = number;
-
-        if (presenter.checkAndRequestPermissions(MSPresenter.REQUEST_ID_CALL_PERMISSIONS)) {
-            Intent intent = new Intent(Intent.ACTION_CALL);
-            intent.setData(Uri.parse("tel:" + number));
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            startActivity(intent);
-
-        }
-    }
-
-    @Override
-    public void sendMessage(final String number){
-        pNumber = number;
-        if(presenter.checkAndRequestPermissions(MSPresenter.REQUEST_ID_SMS_PERMISSIONS)) {
-
-                    // This method will be executed once the timer is over
-                    // Start your app main activity
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse("sms:" + number));
-                    startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        presenter.onRequestPermissionsResult(requestCode, permissions, grantResults,pNumber);
-    }
-
-    @Override
-    public void showToast(String message){
-        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void InitGoogleSignIn() {
+        Log.d("INIT GOOGLE","SIGNIN");
 
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 // The serverClientId is an OAuth 2.0 web client ID
@@ -319,15 +259,145 @@ public class MainScreenActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCallClick(String number) {
-        presenter.makeCall(number);
+    public void getIdToken() {
+        Log.d("GET ID","TOKEN");
+
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(presenter.getmGoogleApiClient());
+        startActivityForResult(signInIntent, RC_INTENT);
+
+    }
+
+    private User getData() {
+        Bundle extras = getIntent().getExtras();
+        User user = null;
+
+        if (extras != null) {
+            user = (User) extras.getSerializable("user");
+        }
+        return user;
+    }
+
+
+    @Override
+    public void showToast(String message){
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onMessageClick(String number) {
-        presenter.sendMessage(number);
+    public void openAllContacts() {
+        AllContactsFragment fr = AllContactsFragment.newInstance();
+        adapter.addFragment(fr,this.getString(R.string.all_contacts) );
     }
 
+    @Override
+    public void openContact(Bundle person,int userId) {
+        Intent intent = new Intent(this, ContactActivity.class);
+        intent.putExtra("user",user);
+        intent.putExtra("person",person);
+        startActivity(intent);
+    }
+
+    @Override
+    public void openFavorite(int userId) {
+        FavoriteContactsFragment afr = FavoriteContactsFragment.newInstance(userId);
+        adapter.addFragment(afr , this.getString(R.string.favorite_contacts));
+    }
+
+    @Nullable
+    public ArrayList<Person> getContacts() {
+        return contacts;
+    }
+
+    @Override
+    public void onAllContactsFragmentInteraction(Person person) {
+        presenter.openContact(createPersonBundle(person),user.getId());
+    }
+
+    @Override
+    public void onFavoriteContactsFragmentInteraction(Person person) {
+        presenter.openContact(createPersonBundle(person),user.getId());
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
+    private Bundle createPersonBundle(Person p) {
+        Bundle person = new Bundle();
+
+        person.putString("resourceName",p.getResourceName());
+
+        if (p.getNames() != null) {
+            String nm = p.getNames().get(0).getDisplayName();
+            if (nm != null) {
+                person.putString("name", nm);
+            } else {
+                person.putString("name", getString(R.string.no_name));
+            }
+        }
+        if (p.getPhoneNumbers() != null) {
+            String ph = p.getPhoneNumbers().get(0).getCanonicalForm();
+            if (ph != null) {
+                person.putString("phone", ph);
+            } else {
+                person.putString("phone", getString(R.string.no_phone));
+            }
+        }
+        if (p.getEmailAddresses() != null) {
+            String em = p.getEmailAddresses().get(0).getValue();
+            if (em != null) {
+                person.putString("email", em);
+            } else {
+                person.putString("email", getString(R.string.no_email));
+            }
+        }
+        if (p.getAddresses() != null) {
+            String em = p.getAddresses().get(0).getCity();
+            if (em != null) {
+                person.putString("address", em);
+            } else {
+                person.putString("address", getString(R.string.no_address));
+            }
+        }
+        if (p.getOrganizations() != null) {
+            String em = p.getOrganizations().get(0).getName();
+            if (em != null) {
+                person.putString("company", em);
+            } else {
+                person.putString("company", getString(R.string.no_company));
+            }
+        }
+        if (p.getPhotos() != null) {
+            person.putString("url",p.getPhotos().get(0).getUrl());
+        }
+
+        return person;
+    }
 
 }
 

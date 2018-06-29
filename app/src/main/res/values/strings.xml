@@ -32,16 +32,18 @@
     <string name="no_name">No Name</string>
     <string name="no_phone">No phone number</string>
     <string name="no_email">No email</string>
+    <string name="no_address">No address</string>
+    <string name="no_company">No company</string>
     <string name="call_permission">Please, give permission to make call in your phone settings!</string>
     <string name="sms_permission">Please, give permission to send sms in your phone settings!</string>
     <string name="no_contact">You have no contacts in your Google account!</string>
-
-
-
-
-
-
-
+    <string name="phone">Phone number:</string>
+    <string name="emailAddresswith">Email address:</string>
+    <string name="addresswith">Address:</string>
+    <string name="company">Company:</string>
+    <string name="all_contacts">All contacts</string>
+    <string name="favorite_contacts">Favorite</string>
+    <string name="choosen_contact">Choosen contact</string>
 
 
 </resources>

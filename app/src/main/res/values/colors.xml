@@ -5,6 +5,11 @@
     <color name="colorAccent">#60aadf</color>
     <color name="colorBlue">#3f7ba6</color>
     <color name="colorText">#3f7ba6</color>
+    <color name="colorBlueLight">#559ccf</color>
+
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorGreen">#44be5c</color>
+    <color name="colorYellow">#fdd534</color>
 
 
 

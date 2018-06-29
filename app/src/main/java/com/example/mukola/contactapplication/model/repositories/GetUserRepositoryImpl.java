@@ -62,32 +62,7 @@ public class GetUserRepositoryImpl implements GetUserRepository {
         if (cursor != null) {
             cursor.close();
         }
-        //  це я собі намутив щоб в логах бачити всі записи які є в таблиці , потім заберу
-        Cursor c;
-        String sqlQuery = "select * "
-                + "from users "
-                + "";
 
-        c = database.rawQuery(sqlQuery, new String[] {});
-        if(c.moveToFirst()) {
-            int idColIndex = c.getColumnIndex("id");
-            int usernameColIndex = c.getColumnIndex("name");
-            int emailColIndex = c.getColumnIndex("password");
-            int sexColIndex = c.getColumnIndex("number");
-            int facultyColIndex = c.getColumnIndex("address");
-            int studentIdColIndex = c.getColumnIndex("email");
-
-
-            do {
-                Log.d("id - ",c.getString(idColIndex));
-                Log.d("name - ",c.getString(usernameColIndex));
-                Log.d("password - ",c.getString(emailColIndex));
-                Log.d("number - ",c.getString(sexColIndex));
-                Log.d("address - ",c.getString(facultyColIndex));
-                Log.d("email - ",c.getString(studentIdColIndex));
-            } while (c.moveToNext());
-
-        }
         database.close();
         dbHelper.close();
     }

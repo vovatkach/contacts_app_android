@@ -34,7 +34,11 @@ public class RegisterRepositoryImpl implements RegisterRepository {
         contentValues.put(DatabaseContract.USERS.COLUMN_EMAIL, user.getEmail());
 
         long k = database.insert(DatabaseContract.USERS.TABLE, null, contentValues);
+
+        user.setId( (int) k);
+
         Log.d("row inserted - ",""+k);
+
 
         database.close();
         dbHelper.close();
