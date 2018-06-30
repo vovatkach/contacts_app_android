@@ -1,16 +1,141 @@
 package com.example.mukola.contactapplication.view.fragments.login;
 
+import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.mukola.contactapplication.model.models.User;
+import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
+import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.RegisterRepository;
+import com.example.mukola.contactapplication.model.repositories.RegisterRepositoryImpl;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public class LoginPresenter implements LoginContract.IRegisterPresenter {
 
     @NonNull
     private LoginContract.IRegisterView view;
 
-    public LoginPresenter (LoginContract.IRegisterView view){
+    @NonNull
+    private Context context;
+
+    @NonNull
+    private Activity activity;
+
+    @NonNull
+    private GetUserRepository getUserRepository;
+
+    @NonNull
+    private GoogleSignInClient mGoogleSignInClient;
+
+
+    public LoginPresenter (LoginContract.IRegisterView view,@NonNull Context context,@NonNull Activity activity){
         this.view = view;
+        this.context = context;
+        this.activity = activity;
+        getUserRepository = new GetUserRepositoryImpl(context);
+        initGoogleSign();
+    }
+
+    private void initGoogleSign(){
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+    }
+
+    private GoogleSignInAccount checkIsSigned(){
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(context);
+
+        return account;
+   }
+
+    @Override
+    public void login(@NonNull String email,@NonNull final String password) {
+        getUserRepository.getUser(email, new GetUserRepository.GetUserCallback() {
+            @Override
+            public void foundUser(@NonNull User user) {
+                if (view != null) {
+                    if (user.getPassword().equals(password)) {
+                        view.openMainScreen(user);
+                    } else {
+                        view.showToast("Incorrect password");
+                    }
+                }
+            }
+
+            @Override
+            public void notFound() {
+                if (view != null) {
+                    signOut();
+                    view.showToast("User not found!");
+                }
+            }
+        });
+    }
+
+    @Override
+    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            User user = new User();
+            user.setName(account.getDisplayName());
+            user.setEmail(account.getEmail());
+            user.setPassword(account.getId());
+            user.setNumber(account.getFamilyName());
+            user.setAddress(account.getGivenName());
+            user.setAuthCode(account.getServerAuthCode());
+            login(user.getEmail(),user.getPassword());
+            Log.d("Google email",account.getEmail());
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
+            view.showToast("Please, try again!");
+            //updateUI(null);
+        }
+    }
+
+    private void handleSignIn(GoogleSignInAccount account) {
+            User user = new User();
+            user.setName(account.getDisplayName());
+            user.setEmail(account.getEmail());
+            user.setPassword(account.getId());
+            user.setNumber(account.getFamilyName());
+            user.setAddress(account.getGivenName());
+            user.setAuthCode(account.getServerAuthCode());
+            login(user.getEmail(),user.getPassword());
+            Log.d("Google email",account.getEmail());
+    }
+
+    @Override
+    public void signIn() {
+        GoogleSignInAccount account = checkIsSigned();
+
+        if (account!=null){
+            handleSignIn(account);
+        }else {
+            view.signIn();
+        }
+    }
+
+    @Override
+    public GoogleSignInClient getGoogleSignInClient() {
+        return mGoogleSignInClient;
     }
 
     @Override
@@ -26,14 +151,10 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
     @Override
     public void signInButtonPressed(@NonNull String email,@NonNull String password) {
         if (isEmpty(email, password)==false) {
-            view.signInButtonPressed(email, password);
+            login(email,password);
         }
     }
 
-    @Override
-    public void signInGooglePressed() {
-        view.signInGooglePressed();
-    }
 
     private boolean isEmpty(String email,String password){
         if (email.isEmpty()){
@@ -46,6 +167,18 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
             return false;
         }
     }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
+    }
+
+
 
 
 

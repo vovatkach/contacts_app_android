@@ -1,6 +1,7 @@
 package com.example.mukola.contactapplication.view.fragments.login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,9 @@ import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,7 +26,7 @@ import butterknife.Unbinder;
 
 public class LoginFragment extends Fragment implements LoginContract.IRegisterView{
 
-
+    private static final int RC_SIGN_IN = 1;
 
     @Nullable
     private OnLoginFragmentInteractionListener mListener;
@@ -51,7 +55,7 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
 
     @OnClick(R.id.sign_in_button_login)
     void onGoogleSignInClick(View view) {
-        presenter.signInGooglePressed();
+        presenter.signIn();
     }
 
     public LoginFragment() {
@@ -73,16 +77,10 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
 
         unbinder = ButterKnife.bind(this,view);
 
-        presenter = new LoginPresenter(this);
+        presenter = new LoginPresenter(this,getContext(),getActivity());
 
         return view;
     }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed() {
-
-    }
-
 
     @Override
     public void onAttach(Context context) {
@@ -101,8 +99,27 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
         mListener = null;
         unbinder.unbind();
         presenter.detachView();
-        getActivity().finish();
     }
+
+    @Override
+    public void signIn() {
+        Intent signInIntent = presenter.getGoogleSignInClient().getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            presenter.handleSignInResult(task);
+        }
+    }
+
 
     @Override
     public void showToast(@NonNull String message) {
@@ -116,17 +133,11 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
         }
     }
 
-    @Override
-    public void signInButtonPressed(@NonNull String email,@NonNull String password) {
-        if (mListener != null) {
-            mListener.onLoginBtnPressed(email,password);
-        }
-    }
 
     @Override
-    public void signInGooglePressed() {
+    public void openMainScreen(@NonNull User user) {
         if (mListener != null) {
-            mListener.onGoogleSignInPressed();
+            mListener.openMainScreenFromLoginFragment(user);
         }
     }
 
@@ -134,8 +145,7 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
     public interface OnLoginFragmentInteractionListener {
         // TODO: Update argument type and name
         void onSignUpTVPressed();
-        void onLoginBtnPressed(@NonNull String email, @NonNull String password);
-        void onGoogleSignInPressed();
+        void openMainScreenFromLoginFragment(@NonNull User user);
 
     }
 }

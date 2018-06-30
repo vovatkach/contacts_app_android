@@ -18,6 +18,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import butterknife.OnClick;
+
 public class MainPresenter implements MainContract.IMainPresenter {
 
     @NonNull
@@ -72,103 +74,6 @@ public class MainPresenter implements MainContract.IMainPresenter {
     }
 
     @Override
-    public void register(@NonNull final User user) {
-        getUserRepository.getUser(user.getName(), new GetUserRepository.GetUserCallback() {
-            @Override
-            public void foundUser(@NonNull User user) {
-                if (view!=null) {
-                    view.showToast("Current user is already exists!");
-                }
-            }
-
-            @Override
-            public void notFound() {
-                registerUser(user);
-            }
-        });
-    }
-
-    @Override
-    public void login(@NonNull String email,@NonNull final String password) {
-        getUserRepository.getUser(email, new GetUserRepository.GetUserCallback() {
-            @Override
-            public void foundUser(@NonNull User user) {
-                if (view != null) {
-                    if (user.getPassword().equals(password)) {
-                        view.openMainScreen(user);
-                    } else {
-                        view.showToast("Incorrect password");
-                    }
-                }
-            }
-
-            @Override
-            public void notFound() {
-                if (view != null) {
-                    view.showToast("User not found!");
-                }
-            }
-        });
-    }
-
-    private void registerUser(@NonNull User user){
-        registerRepository.register(user, new RegisterRepository.RegisterCallback() {
-            @Override
-            public void register(@NonNull User user) {
-                getUserRepository.getUser(user.getEmail(), new GetUserRepository.GetUserCallback() {
-                    @Override
-                    public void foundUser(@NonNull User user) {
-                        if (view != null) {
-                            view.openMainScreen(user);
-                        }
-                    }
-
-                    @Override
-                    public void notFound() {
-                        if (view != null) {
-                            view.showToast("Registration Failed");
-                        }
-                    }
-                });
-            }
-        });
-    }
-
-    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
-            User user = new User();
-            user.setName(account.getDisplayName());
-            user.setEmail(account.getEmail());
-            user.setPassword(account.getId());
-            user.setNumber(account.getFamilyName());
-            user.setAddress(account.getGivenName());
-//            Log.d("SERVER AAAAAA",account.getServerAuthCode());
-            user.setAuthCode(account.getServerAuthCode());
-            view.openMainScreen(user);
-            Log.d("Google email",account.getEmail());
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-            view.showToast("Please, try again!");
-            //updateUI(null);
-        }
-    }
-
-    @Override
-    public void signIn() {
-        view.signIn();
-    }
-
-    @Override
-    public GoogleSignInClient getGoogleSignInClient() {
-        return mGoogleSignInClient;
-    }
-
-    @Override
     public void openMainScreen(@NonNull User user) {
         view.openMainScreen(user);
     }
@@ -176,6 +81,11 @@ public class MainPresenter implements MainContract.IMainPresenter {
     @Override
     public void detachView() {
         view = null;
+    }
+
+    @Override
+    public void openStartFragment() {
+        view.openStartFragment();
     }
 
 

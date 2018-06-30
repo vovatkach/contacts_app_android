@@ -12,20 +12,15 @@ public interface MainContract {
         void openLoginFragment();
         void openRegisterFragment();
         void showToast(@NonNull String message);
-        void signIn();
         void openMainScreen(@NonNull User user);
-
+        void openStartFragment();
     }
 
     public interface IMainPresenter{
         void openLoginFragment();
         void openRegisterFragment();
-        void register(@NonNull User user);
-        void login(@NonNull String email,@NonNull String password);
-        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
-        void signIn();
-        GoogleSignInClient getGoogleSignInClient();
         void openMainScreen(@NonNull User user);
         void detachView();
+        void openStartFragment();
     }
 }

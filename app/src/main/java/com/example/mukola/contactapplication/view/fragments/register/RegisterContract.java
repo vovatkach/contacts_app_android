@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 import android.widget.EditText;
 
 import com.example.mukola.contactapplication.model.models.User;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
@@ -11,14 +14,17 @@ public interface RegisterContract {
     public interface IRegisterView{
         void showToast(@NonNull String message);
         void signInTvPressed();
-        void signUpButtonPressed(@NonNull User user);
-        void signInGooglePressed();
+        void openMainScreen(@NonNull User user);
+        void signIn();
     }
 
     public interface IRegisterPresenter{
         void createUser(@NonNull List<EditText> list);
         void openSignIn();
-        void signInWithGoogle();
         void detachView();
+        void register(@NonNull final User user);
+        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
+        void signIn();
+        GoogleSignInClient getGoogleSignInClient();
     }
 }

@@ -53,6 +53,8 @@ public class GetUserRepositoryImpl implements GetUserRepository {
                 user.setEmail(cursor.getString(emailIndex));
 
                 callback.foundUser(user);
+
+                Log.d("FOUND USER", user.getEmail());
             } else {
                 callback.notFound();
             }

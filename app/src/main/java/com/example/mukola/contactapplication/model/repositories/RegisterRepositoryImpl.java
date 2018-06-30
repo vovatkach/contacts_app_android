@@ -37,7 +37,7 @@ public class RegisterRepositoryImpl implements RegisterRepository {
 
         user.setId( (int) k);
 
-        Log.d("row inserted - ",""+k);
+        Log.d("REGR row inserted - ",""+k);
 
 
         database.close();

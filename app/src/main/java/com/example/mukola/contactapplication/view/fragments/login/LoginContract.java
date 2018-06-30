@@ -3,19 +3,25 @@ package com.example.mukola.contactapplication.view.fragments.login;
 import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.User;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.tasks.Task;
 
 public interface LoginContract {
     public interface IRegisterView{
         void showToast(@NonNull String message);
         void signUpTvPressed();
-        void signInButtonPressed(@NonNull String email,@NonNull String password);
-        void signInGooglePressed();
+        void openMainScreen(@NonNull User user);
+        void signIn();
     }
 
     public interface IRegisterPresenter{
         void signUpTvPressed();
         void signInButtonPressed(@NonNull String email,@NonNull String password);
-        void signInGooglePressed();
         void detachView();
+        void login(@NonNull String email,@NonNull final String password);
+        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
+        GoogleSignInClient getGoogleSignInClient();
+        void signIn();
     }
 }
