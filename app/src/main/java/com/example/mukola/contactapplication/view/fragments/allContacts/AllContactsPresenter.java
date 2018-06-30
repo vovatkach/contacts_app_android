@@ -2,6 +2,7 @@ package com.example.mukola.contactapplication.view.fragments.allContacts;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,22 +13,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.api.services.people.v1.People;
-import com.google.api.services.people.v1.model.ListConnectionsResponse;
-import com.google.api.services.people.v1.model.Person;
+import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.repositories.GetContactsRepository;
+import com.example.mukola.contactapplication.model.repositories.GetContactsRepositoryImpl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static android.content.ContentValues.TAG;
 
 public class AllContactsPresenter implements AllContactsContract.IAllContactsPresenter {
 
@@ -44,11 +37,17 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
     @NonNull
     private AllContactsFragment fragment;
 
+    @NonNull
+    GetContactsRepository getContactsRepository;
 
-    public AllContactsPresenter (@NonNull AllContactsContract.IAllContactsView view, @NonNull Activity activity, AllContactsFragment fragment){
+
+
+    public AllContactsPresenter (@NonNull AllContactsContract.IAllContactsView view, @NonNull Activity activity,
+                                 AllContactsFragment fragment, @NonNull Context context){
         this.view = view;
         this.activity = activity;
         this.fragment = fragment;
+        getContactsRepository = new GetContactsRepositoryImpl(context);
     }
 
 
@@ -60,12 +59,12 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
 
 
     @Override
-    public void sendMessage(String number) {
+    public void sendMessage(@NonNull String number) {
         view.sendMessage(number);
     }
 
     @Override
-    public void makeCall(String number) {
+    public void makeCall(@NonNull String number) {
         view.makeCall(number);
     }
 
@@ -104,8 +103,23 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
     }
 
     @Override
-    public void onContactClicked(Person person) {
-        view.onContactClicked(person);
+    public void onContactClicked(@NonNull Contact contact) {
+        view.onContactClicked(contact);
+    }
+
+    @Override
+    public void getContacts(@NonNull int userId) {
+        getContactsRepository.getContacts(userId, new GetContactsRepository.GetContactsCallback() {
+            @Override
+            public void onContactsGet(@NonNull ArrayList<Contact> list) {
+                view.setContactList(list);
+            }
+
+            @Override
+            public void notFound() {
+                view.setImportButtonVisible();
+            }
+        });
     }
 
     @Override

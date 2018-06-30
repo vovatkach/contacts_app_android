@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
 import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepositoryImpl;
@@ -50,14 +51,8 @@ public class FavoriteContactsPresenter implements FavoriteContactsContract.IFavo
     @NonNull
     private FavoriteContactsContract.IFavoriteContactsView view;
 
-    @Nullable
-    private ArrayList<String> favorites;
-
     @NonNull
     private GetFavoritesRepository getFavoritesRepository;
-
-    @NonNull
-    GoogleApiClient mGoogleApiClient;
 
 
     public FavoriteContactsPresenter (@NonNull FavoriteContactsContract.IFavoriteContactsView view ,
@@ -118,42 +113,24 @@ public class FavoriteContactsPresenter implements FavoriteContactsContract.IFavo
     }
 
     @Override
-    public void onContactClicked(Person person) {
-        view.onContactClicked(person);
+    public void onContactClicked(@NonNull Contact contact) {
+        view.onContactClicked(contact);
     }
 
     @Override
     public void getFavorites(int userId) {
         getFavoritesRepository.getFavorites(userId, new GetFavoritesRepository.GetFavoritesCallback() {
             @Override
-            public void onFavoritesGet(@NonNull ArrayList<String> list) {
-                favorites = list;
+            public void onFavoritesGet(@NonNull ArrayList<Contact> list) {
+                view.setContactList(list);
             }
 
             @Override
             public void notFound() {
-                favorites = null;
+                view.setvNoFavoriteVisible();
             }
         });
     }
-
-    public void checkFavorites(ArrayList<Person> list) {
-        if (favorites!=null){
-            final ArrayList<Person> f = new ArrayList<>();
-            for (String s:favorites) {
-                for (Person p:list) {
-                    if (p.getResourceName().equals(s)){
-                        f.add(p);
-                    }
-                }
-            }
-            view.setContactList(f);
-        }
-    }
-
-
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

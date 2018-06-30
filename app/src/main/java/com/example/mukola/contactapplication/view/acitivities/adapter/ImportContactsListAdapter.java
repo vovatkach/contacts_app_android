@@ -1,6 +1,7 @@
 package com.example.mukola.contactapplication.view.acitivities.adapter;
 
 
+
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,38 +14,36 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
-import com.example.mukola.contactapplication.model.models.Contact;
 import com.google.api.services.people.v1.model.Person;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ViewHolder> {
+public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContactsListAdapter.ViewHolder> {
 
-    private ArrayList<Contact> itemsData;
+    private ArrayList<Person> itemsData;
 
     private OnItemClicked onClick;
 
     private Activity activity;
 
     public interface OnItemClicked {
-        void onCallClick(@NonNull String number);
-        void onMessageClick(@NonNull String number);
-        void onUserClick(@NonNull Contact contact);
+        void onAddClick(@NonNull Person person);
+        void onUserClick(@NonNull Person person);
     }
 
-    public ContactListAdapter(ArrayList<Contact> itemsData,Activity activity) {
+    public ImportContactsListAdapter(ArrayList<Person> itemsData,Activity activity) {
         this.itemsData = itemsData;
         this.activity = activity;
     }
 
     @Override
-    public ContactListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                             int viewType) {
+    public ImportContactsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                            int viewType) {
         // create a new view
         View itemLayoutView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.contact_item, parent,false);
+                .inflate(R.layout.import_contact_item, parent,false);
 
         ViewHolder viewHolder = new ViewHolder(itemLayoutView);
 
@@ -62,18 +61,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     }
 
     private void initListeners(ViewHolder viewHolder,final int position){
-        viewHolder.call.setOnClickListener(new View.OnClickListener() {
+        viewHolder.add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClick.onCallClick(itemsData.get(position).getNumber());
-                Log.d("CALL","CLICKED");
-            }
-        });
-
-        viewHolder.message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClick.onMessageClick(itemsData.get(position).getNumber());
+                onClick.onAddClick(itemsData.get(position));
             }
         });
 
@@ -95,16 +86,22 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
-
-                viewHolder.name.setText(itemsData.get(position).getName());
-
-        if (itemsData.get(position).getPhotoUrl()!=null) {
+        if (itemsData.get(position).getNames()!=null) {
+            String nm = itemsData.get(position).getNames().get(0).getDisplayName();
+            if (nm!=null){
+                viewHolder.name.setText(nm);
+            }else{
+                viewHolder.name.setText(activity.getString(R.string.no_name));
+            }
+        }
+        if (itemsData.get(position).getPhotos()!=null) {
             Glide
                     .with(activity)
-                    .load(itemsData.get(position).getPhotoUrl())
+                    .load(itemsData.get(position).getPhotos().get(0).getUrl())
                     .into(viewHolder.photo);
         }else{
             Log.d("PHOTO","NULL");
+
         }
     }
 
@@ -115,20 +112,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         CircleImageView photo;
 
-        ImageView call;
+        ImageView add;
 
-        ImageView message;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
 
-            name = (TextView) itemLayoutView.findViewById(R.id.tv_name_ci);
+            name = (TextView) itemLayoutView.findViewById(R.id.tv_name_ici);
 
-            photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image);
 
-            call = (ImageView) itemLayoutView.findViewById(R.id.imgView_call_ci);
+            photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image_ici);
 
-            message = (ImageView) itemLayoutView.findViewById(R.id.imgView_message_ci);
+            add = (ImageView) itemLayoutView.findViewById(R.id.img_aff_ici);
         }
     }
 

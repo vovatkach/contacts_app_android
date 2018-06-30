@@ -1,14 +1,12 @@
 package com.example.mukola.contactapplication.view.fragments.allContacts;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,28 +16,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
-import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
+import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
-import com.example.mukola.contactapplication.view.acitivities.mainScreen.MainScreenActivity;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.api.services.people.v1.PeopleScopes;
-import com.google.api.services.people.v1.model.Person;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 
@@ -48,11 +39,23 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
 {
 
-    @BindView(R.id.rv_contacts_ms)
+    @BindView(R.id.rv_contacts_af)
     RecyclerView list;
 
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
+
+    @BindView(R.id.tv_no_contact_af)
+    TextView tv;
+
+    @BindView(R.id.btn_import_af)
+    Button btn;
+
+    @OnClick(R.id.btn_import_af)
+    void onImportClick(View view) {
+        mListener.onImportClick();
+    }
+
+    @NonNull
+    private User user;
 
 
     @NonNull
@@ -71,8 +74,9 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         // Required empty public constructor
     }
 
-    public static AllContactsFragment newInstance() {
+    public static AllContactsFragment newInstance(@NonNull User user) {
         AllContactsFragment fragment = new AllContactsFragment();
+        fragment.setUser(user);
         return fragment;
     }
 
@@ -85,12 +89,9 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
         unbinder = ButterKnife.bind(this,view);
 
-        presenter = new AllContactsPresenter(this,getActivity(),this);
+        presenter = new AllContactsPresenter(this,getActivity(),this,getContext());
 
-
-        setContactList( ((MainScreenActivity) getActivity()).getContacts() );
-
-
+        presenter.getContacts(user.getId());
 
         return view;
     }
@@ -108,6 +109,13 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        presenter.getContacts(user.getId());
+
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
@@ -118,30 +126,25 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
 
     @Override
-    public void setContactList(List<Person> contacts) {
+    public void setContactList(List<Contact> contacts) {
 
-        list.setLayoutManager(new LinearLayoutManager(getActivity()));
+            list.setVisibility(View.VISIBLE);
+            list.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        LinearLayoutManager lm = new LinearLayoutManager(getActivity());
-        lm.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(lm);
+            LinearLayoutManager lm = new LinearLayoutManager(getActivity());
+            lm.setOrientation(LinearLayoutManager.VERTICAL);
+            list.setLayoutManager(lm);
 
-        ArrayList<Person> l = new ArrayList<>(contacts);
+            ArrayList<Contact> l = new ArrayList<>(contacts);
 
-        ContactListAdapter mAdapter = new ContactListAdapter(l, getActivity());
-        // set adapter
-        mAdapter.setOnClick(this);
+            ContactListAdapter mAdapter = new ContactListAdapter(l, getActivity());
+            // set adapter
+            mAdapter.setOnClick(this);
 
-        progressBar.setVisibility(View.GONE);
-
-        if (mAdapter.getItemCount() == 0) {
-            showToast(getString(R.string.no_contact));
-        } else {
             list.setAdapter(mAdapter);
-        }
 
-        // set item animator to DefaultAnimator
-        list.setItemAnimator(new DefaultItemAnimator());
+            // set item animator to DefaultAnimator
+            list.setItemAnimator(new DefaultItemAnimator());
     }
 
 
@@ -156,8 +159,21 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
                 return;
             }
             startActivity(intent);
-
         }
+    }
+
+    @Override
+    public void onContactClicked(@NonNull Contact contact) {
+        if (mListener != null) {
+            mListener.onAllContactsFragmentInteraction(contact);
+        }
+    }
+
+    @Override
+    public void setImportButtonVisible() {
+        list.setVisibility(View.GONE);
+        tv.setVisibility(View.VISIBLE);
+        btn.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -165,42 +181,36 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         pNumber = number;
         if(presenter.checkAndRequestPermissions(AllContactsPresenter.REQUEST_ID_SMS_PERMISSIONS)) {
 
-            // This method will be executed once the timer is over
-            // Start your app main activity
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("sms:" + number));
             startActivity(intent);
         }
     }
 
+    public void setUser(@NonNull User user){
+        this.user = user;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        Log.d("PERMIS","FRAGMENT");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         presenter.onRequestPermissionsResult(requestCode, permissions, grantResults,pNumber);
     }
 
     @Override
-    public void onCallClick(String number) {
+    public void onCallClick(@NonNull String number) {
         presenter.makeCall(number);
     }
 
     @Override
-    public void onMessageClick(String number) {
+    public void onMessageClick(@NonNull String number) {
         presenter.sendMessage(number);
     }
 
     @Override
-    public void onUserClick(int position) {
-        presenter.onContactClicked( ((MainScreenActivity) getActivity()).getContacts().get(position));
-    }
-
-    @Override
-    public void onContactClicked(Person person) {
-        if (mListener != null) {
-            mListener.onAllContactsFragmentInteraction(person);
-        }
+    public void onUserClick(@NonNull Contact contact) {
+        presenter.onContactClicked(contact);
     }
 
     @Override
@@ -208,14 +218,11 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void setProgressBarVisible() {
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
     public interface OnAllContactsFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onAllContactsFragmentInteraction(Person person);
+
+        void onAllContactsFragmentInteraction(@NonNull Contact contact);
+        void onImportClick();
+
         }
 
 }

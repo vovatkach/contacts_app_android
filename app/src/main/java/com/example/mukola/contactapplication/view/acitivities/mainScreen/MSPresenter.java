@@ -1,12 +1,16 @@
 package com.example.mukola.contactapplication.view.acitivities.mainScreen;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
+import com.example.mukola.contactapplication.model.repositories.GetContactsRepository;
+import com.example.mukola.contactapplication.model.repositories.GetContactsRepositoryImpl;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -27,15 +31,12 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     private MSContract.IMainScreenView view;
 
     @NonNull
-    GoogleApiClient mGoogleApiClient;
-
-    @NonNull
     Activity activity;
 
 
 
 
-    public MSPresenter(@NonNull MSContract.IMainScreenView view,@NonNull Activity activity){
+    public MSPresenter(@NonNull MSContract.IMainScreenView view, @NonNull Activity activity){
         this.view = view;
         this.activity = activity;
     }
@@ -51,8 +52,8 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     }
 
     @Override
-    public void openContact(Bundle person, int userId) {
-        view.openContact(person,userId);
+    public void openContact(@NonNull Contact contact, int userId) {
+        view.openContact(contact,userId);
     }
 
     @Override
@@ -60,93 +61,12 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         view.openFavorite(userId);
     }
 
-
-
-
     @Override
-    public GoogleApiClient getmGoogleApiClient() {
-        return mGoogleApiClient;
-    }
-
-    @Override
-    public void setmGoogleApiClient(@NonNull GoogleApiClient mGoogleApiClient) {
-        this.mGoogleApiClient = mGoogleApiClient;
-    }
-
-    @Override
-    public void connectmGoogleApiClient(){
-        mGoogleApiClient.connect();
+    public void openImport() {
+        view.openImport();
     }
 
 
-    @Override
-    public void InitGoogleSignIn() {
-        view.InitGoogleSignIn();
-    }
-
-    @Override
-    public void getIdToken() {
-        view.getIdToken();
-    }
-
-    @Override
-    public void verification(Intent data) {
-        Log.d(TAG, "sign in result");
-        GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
-        if (result.isSuccess()) {
-            final GoogleSignInAccount acct = result.getSignInAccount();
-
-            Log.d(TAG, "onActivityResult:GET_TOKEN:success:" + result.getStatus().isSuccess());
-            Log.d(TAG, "auth Code:" + acct.getServerAuthCode());
-
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    retrieveContacts(acct.getServerAuthCode());
-                }
-            }).start();
-
-
-        } else {
-
-            Log.d(TAG, result.getStatus().toString() + "\nmsg: " + result.getStatus().getStatusMessage());
-        }
-    }
-
-    private void retrieveContacts(String authCode) {
-        List<Person> contactList = new ArrayList<>();
-
-        try {
-            People peopleService = PeopleHelper.setUp(activity, authCode);
-
-            ListConnectionsResponse response = peopleService.people().connections()
-                    .list("people/me")
-                    .setRequestMaskIncludeField("person.names,person.emailAddresses,person.phoneNumbers,person.photos")
-                    .execute();
-
-            List<Person> connections = response.getConnections();
-            if (connections != null) {
-                contactList = connections;
-            }else{
-                Log.d("AAAAAAAA", "NULLLL");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        final List<Person> finalContactList = contactList;
-
-        activity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                view.initViewPager((ArrayList<Person>) finalContactList);
-            }
-        });
-
-    }
 
 
 }

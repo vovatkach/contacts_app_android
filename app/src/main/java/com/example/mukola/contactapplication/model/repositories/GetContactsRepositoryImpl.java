@@ -12,17 +12,17 @@ import com.example.mukola.contactapplication.model.models.Contact;
 
 import java.util.ArrayList;
 
-public class GetFavoritesRepositoryImpl implements GetFavoritesRepository{
+public class GetContactsRepositoryImpl implements GetContactsRepository {
 
     @NonNull
     private Context context;
 
-    public GetFavoritesRepositoryImpl(@NonNull Context context) {
+    public GetContactsRepositoryImpl(@NonNull Context context) {
         this.context = context;
     }
 
     @Override
-    public void getFavorites(@NonNull int userId, @NonNull GetFavoritesCallback callback) {
+    public void getContacts(@NonNull int userId, @NonNull GetContactsCallback callback) {
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
@@ -30,10 +30,9 @@ public class GetFavoritesRepositoryImpl implements GetFavoritesRepository{
         Cursor c;
         String sqlQuery = "select * "
                 + "from " + DatabaseContract.CONTACTS.TABLE
-                + " where " + DatabaseContract.CONTACTS.COLUMN_USER_ID + " = ?" + " and " +
-                DatabaseContract.CONTACTS.COLUMN_IS_FAVORITE + " = ?";
+                + " where " + DatabaseContract.CONTACTS.COLUMN_USER_ID + " = ?";
 
-        c = database.rawQuery(sqlQuery, new String[]{String.valueOf(userId),"true"});
+        c = database.rawQuery(sqlQuery, new String[] {String.valueOf(userId)});
 
         int IdColIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_ID);
         int userIdIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_USER_ID);
@@ -45,45 +44,45 @@ public class GetFavoritesRepositoryImpl implements GetFavoritesRepository{
         int photoUrlIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_PHOTO_URL);
         int isFavoriteIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_IS_FAVORITE);
 
-        if (c.moveToFirst()) {
+        if(c.moveToFirst()){
             do {
                 Contact con = new Contact();
-                Log.d("CONTACT ID - ", "" + c.getInt(IdColIndex));
+                Log.d("CONTACT ID - ",""+c.getInt(IdColIndex));
                 con.setId(c.getInt(IdColIndex));
 
-                Log.d("USER ID - ", c.getInt(userIdIndex) + "");
+                Log.d("USER ID - ",c.getInt(userIdIndex)+"");
 
-                Log.d("CONTACT NAME - ", "" + c.getString(nameIndex));
+                Log.d("CONTACT NAME - ",""+c.getString(nameIndex));
                 con.setName(c.getString(nameIndex));
 
-                Log.d("CONTACT numberIndex - ", "" + c.getString(numberIndex));
+                Log.d("CONTACT numberIndex - ",""+c.getString(numberIndex));
                 con.setNumber(c.getString(numberIndex));
 
-                Log.d("CONTACT emailIndex - ", "" + c.getString(emailIndex));
+                Log.d("CONTACT emailIndex - ",""+c.getString(emailIndex));
                 con.setEmail(c.getString(emailIndex));
 
-                Log.d("CONTACT addressIndex - ", "" + c.getString(addressIndex));
+                Log.d("CONTACT addressIndex - ",""+c.getString(addressIndex));
                 con.setAddress(c.getString(addressIndex));
 
-                Log.d("CONTACT companyIndex - ", "" + c.getString(companyIndex));
+                Log.d("CONTACT companyIndex - ",""+c.getString(companyIndex));
                 con.setCompany(c.getString(companyIndex));
 
-                Log.d("CONTACT UrlIndex - ", "" + c.getString(photoUrlIndex));
+                Log.d("CONTACT UrlIndex - ",""+c.getString(photoUrlIndex));
                 con.setPhotoUrl(c.getString(photoUrlIndex));
 
-                Log.d("CONTACT isFavorite - ", "" + c.getString(isFavoriteIndex));
-                if (c.getString(isFavoriteIndex).equals("true")) {
+                Log.d("CONTACT isFavorite - ",""+c.getString(isFavoriteIndex));
+                if (c.getString(isFavoriteIndex).equals("true")){
                     con.setFavorite(true);
-                } else if (c.getString(isFavoriteIndex).equals("false")) {
+                }else if(c.getString(isFavoriteIndex).equals("false")){
                     con.setFavorite(false);
                 }
 
                 contacts.add(con);
 
-            } while (c.moveToNext());
+            }while (c.moveToNext());
 
-            callback.onFavoritesGet(contacts);
-        }else{
+            callback.onContactsGet(contacts);
+        }else {
             callback.notFound();
         }
 

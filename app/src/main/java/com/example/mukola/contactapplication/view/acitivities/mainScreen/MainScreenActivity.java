@@ -1,6 +1,5 @@
 package com.example.mukola.contactapplication.view.acitivities.mainScreen;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,21 +23,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
-import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
+import com.example.mukola.contactapplication.view.acitivities.importActivity.ImportActivity;
 import com.example.mukola.contactapplication.view.fragments.allContacts.AllContactsFragment;
 import com.example.mukola.contactapplication.view.fragments.favoriteContacts.FavoriteContactsFragment;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.api.services.people.v1.PeopleScopes;
 import com.google.api.services.people.v1.model.Person;
 
 import java.util.ArrayList;
@@ -49,17 +40,12 @@ import butterknife.ButterKnife;
 
 public class MainScreenActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MSContract.IMainScreenView,
-        GoogleApiClient.OnConnectionFailedListener,
-        GoogleApiClient.ConnectionCallbacks,AllContactsFragment.OnAllContactsFragmentInteractionListener,
+        AllContactsFragment.OnAllContactsFragmentInteractionListener,
         FavoriteContactsFragment.OnFavoriteContactsFragmentInteractionListener
 {
 
 
-    @NonNull
-    private final int RC_INTENT = 200;
 
-    @NonNull
-    private final int RC_API_CHECK = 100;
 
     @Nullable
     private MSContract.IMainScreenPresenter presenter;
@@ -67,17 +53,11 @@ public class MainScreenActivity extends AppCompatActivity
     @NonNull
     private User user;
 
-    @Nullable
-    private ArrayList<Person> contacts;
-
     private TabLayout tabLayout;
 
     private ViewPager viewPager;
 
     ViewPagerAdapter adapter;
-
-    @NonNull
-    private String authCode;
 
 
     @Override
@@ -112,18 +92,12 @@ public class MainScreenActivity extends AppCompatActivity
 
         user = getData();
 
-        presenter.InitGoogleSignIn();
-
-        presenter.getIdToken();
-
+        initViewPager();
 
         Log.d("Logined users email - ", user.getEmail());
     }
 
-    @Override
-    public void initViewPager(ArrayList<Person> list){
-
-        contacts = list;
+    public void initViewPager(){
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -152,27 +126,7 @@ public class MainScreenActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_screen, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -182,7 +136,7 @@ public class MainScreenActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            presenter.openImport();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -200,72 +154,6 @@ public class MainScreenActivity extends AppCompatActivity
         return true;
     }
 
-//    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d("ON ACTIVITULT","AAAAAA");
-
-        switch (requestCode) {
-            case RC_INTENT:
-                presenter.verification(data);
-                break;
-        }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d("connection", "msg: " + connectionResult.getErrorMessage());
-
-        GoogleApiAvailability mGoogleApiAvailability = GoogleApiAvailability.getInstance();
-        Dialog dialog = mGoogleApiAvailability.getErrorDialog(this, connectionResult.getErrorCode(), RC_API_CHECK);
-        dialog.show();
-    }
-
-    @Override
-    public void InitGoogleSignIn() {
-        Log.d("INIT GOOGLE","SIGNIN");
-
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                // The serverClientId is an OAuth 2.0 web client ID
-                .requestServerAuthCode(PeopleHelper.CLIENT_ID)
-                .requestEmail()
-                .requestScopes(new Scope(Scopes.PLUS_LOGIN),
-                        new Scope(PeopleScopes.CONTACTS_READONLY),
-                        new Scope(PeopleScopes.USER_EMAILS_READ),
-                        new Scope(PeopleScopes.USERINFO_EMAIL),
-                        new Scope(PeopleScopes.USER_PHONENUMBERS_READ))
-                .build();
-
-        // To connect with Google Play Services and Sign In
-        presenter.setmGoogleApiClient(new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addOnConnectionFailedListener(this)
-                .addConnectionCallbacks(this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, signInOptions)
-                .build());
-
-        presenter.connectmGoogleApiClient();
-
-    }
-
-    @Override
-    public void getIdToken() {
-        Log.d("GET ID","TOKEN");
-
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(presenter.getmGoogleApiClient());
-        startActivityForResult(signInIntent, RC_INTENT);
-
-    }
 
     private User getData() {
         Bundle extras = getIntent().getExtras();
@@ -285,15 +173,15 @@ public class MainScreenActivity extends AppCompatActivity
 
     @Override
     public void openAllContacts() {
-        AllContactsFragment fr = AllContactsFragment.newInstance();
+        AllContactsFragment fr = AllContactsFragment.newInstance(user);
         adapter.addFragment(fr,this.getString(R.string.all_contacts) );
     }
 
     @Override
-    public void openContact(Bundle person,int userId) {
+    public void openContact(@NonNull Contact contact, int userId) {
         Intent intent = new Intent(this, ContactActivity.class);
         intent.putExtra("user",user);
-        intent.putExtra("person",person);
+        intent.putExtra("contact",contact);
         startActivity(intent);
     }
 
@@ -303,20 +191,28 @@ public class MainScreenActivity extends AppCompatActivity
         adapter.addFragment(afr , this.getString(R.string.favorite_contacts));
     }
 
-    @Nullable
-    public ArrayList<Person> getContacts() {
-        return contacts;
+    @Override
+    public void openImport() {
+        Intent intent = new Intent(this, ImportActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
     }
 
     @Override
-    public void onAllContactsFragmentInteraction(Person person) {
-        presenter.openContact(createPersonBundle(person),user.getId());
+    public void onAllContactsFragmentInteraction(@NonNull Contact contact) {
+        presenter.openContact(contact,user.getId());
     }
 
     @Override
-    public void onFavoriteContactsFragmentInteraction(Person person) {
-        presenter.openContact(createPersonBundle(person),user.getId());
+    public void onImportClick() {
+        presenter.openImport();
     }
+
+    @Override
+    public void onFavoriteContactsFragmentInteraction(@NonNull Contact contact) {
+        presenter.openContact(contact,user.getId());
+    }
+
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
@@ -345,58 +241,6 @@ public class MainScreenActivity extends AppCompatActivity
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
-    }
-
-    private Bundle createPersonBundle(Person p) {
-        Bundle person = new Bundle();
-
-        person.putString("resourceName",p.getResourceName());
-
-        if (p.getNames() != null) {
-            String nm = p.getNames().get(0).getDisplayName();
-            if (nm != null) {
-                person.putString("name", nm);
-            } else {
-                person.putString("name", getString(R.string.no_name));
-            }
-        }
-        if (p.getPhoneNumbers() != null) {
-            String ph = p.getPhoneNumbers().get(0).getCanonicalForm();
-            if (ph != null) {
-                person.putString("phone", ph);
-            } else {
-                person.putString("phone", getString(R.string.no_phone));
-            }
-        }
-        if (p.getEmailAddresses() != null) {
-            String em = p.getEmailAddresses().get(0).getValue();
-            if (em != null) {
-                person.putString("email", em);
-            } else {
-                person.putString("email", getString(R.string.no_email));
-            }
-        }
-        if (p.getAddresses() != null) {
-            String em = p.getAddresses().get(0).getCity();
-            if (em != null) {
-                person.putString("address", em);
-            } else {
-                person.putString("address", getString(R.string.no_address));
-            }
-        }
-        if (p.getOrganizations() != null) {
-            String em = p.getOrganizations().get(0).getName();
-            if (em != null) {
-                person.putString("company", em);
-            } else {
-                person.putString("company", getString(R.string.no_company));
-            }
-        }
-        if (p.getPhotos() != null) {
-            person.putString("url",p.getPhotos().get(0).getUrl());
-        }
-
-        return person;
     }
 
 }

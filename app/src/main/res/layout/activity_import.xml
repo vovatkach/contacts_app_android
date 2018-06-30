@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".view.fragments.allContacts.AllContactsFragment">
+    tools:context=".view.acitivities.importActivity.ImportActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_is"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:titleTextColor="@color/colorWhite"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -18,7 +27,7 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_contacts_af"
+                android:id="@+id/rv_contacts_is"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
@@ -29,7 +38,7 @@
                 app:layoutManager="LinearLayoutManager" />
 
             <ProgressBar
-                android:id="@+id/progressBar_af"
+                android:id="@+id/progressBar_is"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,35 +52,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="UnknownId" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_no_contact_af"
+                android:id="@+id/tv_no_contact_is"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="306dp"
-                android:text="@string/no_contact_af"
+                android:text="@string/no_contact"
                 android:textAlignment="center"
                 android:textColor="@color/colorText"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:visibility="invisible" />
 
-            <Button
-                android:id="@+id/btn_import_af"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="202dp"
-                android:background="@drawable/roundrect"
-                android:text="@string/importT"
-                android:textColor="@color/colorText"
-                android:visibility="invisible"/>
-
         </RelativeLayout>
     </LinearLayout>
-</FrameLayout>
+
+</android.support.v7.widget.LinearLayoutCompat>

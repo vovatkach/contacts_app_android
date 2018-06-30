@@ -12,16 +12,18 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.ContentFrameLayout;
 import android.util.Log;
 
+import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromContactsRepository;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromContactsRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepositoryImpl;
-import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepository;
-import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepositoryImpl;
-import com.google.api.services.people.v1.model.Person;
+import com.example.mukola.contactapplication.model.repositories.UpdateContactRepository;
+import com.example.mukola.contactapplication.model.repositories.UpdateContactRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,12 +46,13 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     private AddToFavoritesRepository addToFavoritesRepository;
 
     @NonNull
-    private GetFavoritesRepository getFavoritesRepository;
-
-    @NonNull
     private DeleteFromFavoritesRepository deleteFromFavoritesRepository;
 
-    private ArrayList<String> favorites;
+    @NonNull
+    private DeleteFromContactsRepository deleteFromContactsRepository;
+
+    @NonNull
+    private UpdateContactRepository updateContactRepository;
 
 
     public ContactPresenter (@NonNull ContactContract.IContactView view,@NonNull Activity activity,
@@ -57,8 +60,9 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
         this.view = view;
         this.activity = activity;
         addToFavoritesRepository = new AddToFavoritesRepositoryImpl(context);
-        getFavoritesRepository = new GetFavoritesRepositoryImpl(context);
         deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
+        deleteFromContactsRepository = new DeleteFromContactsRepositoryImpl(context);
+        updateContactRepository = new UpdateContactRepositoryImpl(context);
     }
 
 
@@ -69,12 +73,12 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     }
 
     @Override
-    public void sendMessage(String number) {
+    public void sendMessage(@NonNull String number) {
         view.sendMessage(number);
     }
 
     @Override
-    public void makeCall(String number) {
+    public void makeCall(@NonNull String number) {
         view.makeCall(number);
     }
 
@@ -87,7 +91,8 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
 
             if (callpermission != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(Manifest.permission.CALL_PHONE);
-                ActivityCompat.requestPermissions(activity, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_CALL_PERMISSIONS);
+                ActivityCompat.requestPermissions(activity,
+                        listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_CALL_PERMISSIONS);
                 return false;
             }
 
@@ -99,7 +104,8 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
 
             if (smspermission != PackageManager.PERMISSION_GRANTED) {
                 listPermissionsNeeded.add(Manifest.permission.SEND_SMS);
-                ActivityCompat.requestPermissions(activity,listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_SMS_PERMISSIONS);
+                ActivityCompat.requestPermissions(activity,
+                        listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_SMS_PERMISSIONS);
                 return false;
             }
         }
@@ -108,8 +114,9 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     }
 
     @Override
-    public void addToFavorites(int userId, String contactId) {
-        addToFavoritesRepository.addToFavorites(userId, contactId, new AddToFavoritesRepository.addToFavoritesCallback() {
+    public void addToFavorites(@NonNull int userId,@NonNull int contactId) {
+        addToFavoritesRepository.addToFavorites(userId, contactId,
+                new AddToFavoritesRepository.AddToFavoritesCallback() {
             @Override
             public void addedSuccessfull() {
                 view.showToast("Contact added to Favorites.");
@@ -123,39 +130,12 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
         });
     }
 
-    @Override
-    public void getFavorites(int userId) {
-        getFavoritesRepository.getFavorites(userId, new GetFavoritesRepository.GetFavoritesCallback() {
-            @Override
-            public void onFavoritesGet(@NonNull ArrayList<String> list) {
-                favorites = list;
-            }
 
-            @Override
-            public void notFound() {
-                favorites = null;
-            }
-        });
-    }
 
     @Override
-    public boolean checkIsFavorite(String contactId) {
-        boolean b = false;
-
-        if (favorites!=null) {
-            for (String s : favorites) {
-                if (s.equals(contactId)) {
-                    b = true;
-                }
-            }
-        }
-
-        return b;
-    }
-
-    @Override
-    public void deleteFromFavorites(int userId, String contactId) {
-        deleteFromFavoritesRepository.deleteFromFavorites(userId, contactId, new DeleteFromFavoritesRepository.deleteFromFavoritesCallback() {
+    public void deleteFromFavorites(@NonNull int userId,@NonNull int contactId) {
+        deleteFromFavoritesRepository.deleteFromFavorites(userId, contactId,
+                new DeleteFromFavoritesRepository.deleteFromFavoritesCallback() {
             @Override
             public void deletedSuccessfull() {
                 view.showToast("Contact is successfull removed from favorites.");
@@ -164,6 +144,38 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
             @Override
             public void notSuccessfull() {
                 view.showToast("Error! Please try again.");
+            }
+        });
+    }
+
+    @Override
+    public void editContact(@NonNull int usedId, @NonNull Contact contact) {
+        updateContactRepository.updateContact(usedId, contact,
+                new UpdateContactRepository.updateContactCallback() {
+            @Override
+            public void updatedSuccessfull() {
+                view.showToast(activity.getString(R.string.edited_successfully));
+            }
+
+            @Override
+            public void notSuccessfull() {
+                view.showToast(activity.getString(R.string.error));
+            }
+        });
+    }
+
+    @Override
+    public void deleteContact(@NonNull int userId, @NonNull int contactId) {
+        deleteFromContactsRepository.deleteFromContacts(userId, contactId,
+                new DeleteFromContactsRepository.DeleteFromContactsCallback() {
+            @Override
+            public void deletedSuccessfull() {
+                view.showToast(activity.getString(R.string.deleted_successfully));
+            }
+
+            @Override
+            public void notSuccessfull() {
+                view.showToast(activity.getString(R.string.error));
             }
         });
     }

@@ -31,30 +31,14 @@
                 android:id="@+id/tv_name_ci"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
                 android:text="TextView"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tv_phone_ci"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="5dp"
-                android:text="TextView"
-                android:textColor="@color/colorText"
-                android:textStyle="italic" />
-
-            <TextView
-                android:id="@+id/tv_email_ci"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="5dp"
-                android:text="@string/no_email"
-                android:textColor="@color/colorText" />
         </LinearLayout>
 
         <LinearLayout

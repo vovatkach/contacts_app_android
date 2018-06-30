@@ -1,8 +1,11 @@
 package com.example.mukola.contactapplication.model.models;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
+
     private int id;
 
     private String name;
@@ -14,8 +17,6 @@ public class User implements Serializable {
     private String address;
 
     private String email;
-
-    private String authCode;
 
 
     public User(){}
@@ -77,13 +78,6 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getAuthCode() {
-        return authCode;
-    }
-
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
-    }
 
     @Override
     public String toString() {

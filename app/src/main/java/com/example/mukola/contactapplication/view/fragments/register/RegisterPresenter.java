@@ -116,7 +116,6 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
             user.setPassword(account.getId());
             user.setNumber(account.getFamilyName());
             user.setAddress(account.getGivenName());
-            user.setAuthCode(account.getServerAuthCode());
             register(user);
             Log.d("Google email",account.getEmail());
         } catch (ApiException e) {

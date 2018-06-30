@@ -27,7 +27,9 @@
             android:name=".view.acitivities.mainScreen.MainScreenActivity"
             android:label="@string/title_activity_main_screen"
             android:theme="@style/AppTheme" />
-        <activity android:name=".view.acitivities.contact.ContactActivity"></activity>
+        <activity android:name=".view.acitivities.contact.ContactActivity"
+            />
+        <activity android:name=".view.acitivities.importActivity.ImportActivity"></activity>
     </application>
 
 </manifest>

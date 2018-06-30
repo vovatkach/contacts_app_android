@@ -8,8 +8,6 @@ import android.util.Log;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
-import com.example.mukola.contactapplication.model.repositories.RegisterRepository;
-import com.example.mukola.contactapplication.model.repositories.RegisterRepositoryImpl;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -98,7 +96,6 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
             user.setPassword(account.getId());
             user.setNumber(account.getFamilyName());
             user.setAddress(account.getGivenName());
-            user.setAuthCode(account.getServerAuthCode());
             login(user.getEmail(),user.getPassword());
             Log.d("Google email",account.getEmail());
         } catch (ApiException e) {
@@ -117,7 +114,6 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
             user.setPassword(account.getId());
             user.setNumber(account.getFamilyName());
             user.setAddress(account.getGivenName());
-            user.setAuthCode(account.getServerAuthCode());
             login(user.getEmail(),user.getPassword());
             Log.d("Google email",account.getEmail());
     }

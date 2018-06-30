@@ -9,6 +9,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -17,8 +20,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
-import com.google.api.services.people.v1.model.Person;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,8 +32,8 @@ import butterknife.OnClick;
 
 public class ContactActivity extends AppCompatActivity implements ContactContract.IContactView {
 
-    @BindView(R.id.tv_name_contact)
-    TextView name;
+    @BindView(R.id.et_name_contact)
+    EditText name;
 
     @BindView(R.id.et_phone_contact)
     EditText phone;
@@ -59,18 +65,18 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
 
     @OnClick(R.id.imageView_favorite_contact)
     void onFavoriteClick(View view) {
-        if (presenter.checkIsFavorite(person.getString("resourceName"))==true) {
+        if (contact.isFavorite()) {
 
-            presenter.deleteFromFavorites(user.getId(),person.getString("resourceName"));
+            presenter.deleteFromFavorites(user.getId(),contact.getId());
+            contact.setFavorite(false);
             changeFavoriteSign(R.drawable.ic_star_border_black_24dp);
-            presenter.getFavorites(user.getId());
 
 
         }else {
 
-            presenter.addToFavorites(user.getId(),person.getString("resourceName"));
+            presenter.addToFavorites(user.getId(),contact.getId());
+            contact.setFavorite(true);
             changeFavoriteSign(R.drawable.ic_star_black_24dp);
-            presenter.getFavorites(user.getId());
 
         }
     }
@@ -79,7 +85,7 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
     private ContactContract.IContactPresenter presenter;
 
     @NonNull
-    private Bundle person;
+    private Contact contact;
 
     @NonNull
     private String pNumber;
@@ -87,44 +93,91 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
     @NonNull
     private User user;
 
+    private int indicator = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
         ButterKnife.bind(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_c);
+        setSupportActionBar(toolbar);
+
+        setTitle(getString(R.string.contact_details));
+
+
         presenter = new ContactPresenter(this,this,this);
 
         getData();
 
-        presenter.getFavorites(user.getId());
-
         initView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_screen, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_edit) {
+            changeInfo();
+            return true;
+        }
+        if (id == R.id.action_delete) {
+            presenter.deleteContact(user.getId(),contact.getId());
+            this.finish();
+            return true;
+        }
+        if (id == R.id.action_save) {
+            saveInfo();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (indicator==0) {
+            menu.findItem(R.id.action_edit).setVisible(false);
+            menu.findItem(R.id.action_save).setVisible(true);
+        }else {
+            menu.findItem(R.id.action_edit).setVisible(true);
+            menu.findItem(R.id.action_save).setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
 
     private void initView(){
-        setTitle(getString(R.string.choosen_contact));
 
-        if (presenter.checkIsFavorite(person.getString("resourceName"))==true) {
+        if (contact.isFavorite()) {
             changeFavoriteSign(R.drawable.ic_star_black_24dp);
         }
 
-        name.setText(person.getString("name"));
+        name.setText(contact.getName());
 
-        phone.setText(person.getString("phone"));
+        phone.setText(contact.getNumber());
 
-        pNumber = person.getString("phone");
+        pNumber = contact.getNumber();
 
-        email.setText(person.getString("email"));
+        email.setText(contact.getEmail());
 
-        address.setText(person.getString("address"));
+        address.setText(contact.getAddress());
 
-        company.setText(person.getString("company"));
+        company.setText(contact.getCompany());
 
         Glide
                 .with(this)
-                .load(person.getString("url"))
+                .load(contact.getPhotoUrl())
                 .into(photo);
     }
 
@@ -180,7 +233,55 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             user = (User) extras.getSerializable("user");
-            person = extras.getBundle("person");
-        } }
+            contact = (Contact) extras.getSerializable("contact");
+        }
+    }
 
+    private   void changeInfo(){
+        indicator = 0;
+        invalidateOptionsMenu();
+        ArrayList<EditText> et = new ArrayList<>();
+        et.add(name);
+        et.add(phone);
+        et.add(email);
+        et.add(address);
+        et.add(company);
+
+        for (EditText editText: et){
+            editText.setClickable(true);
+            editText.setFocusable(true);
+            editText.setFocusableInTouchMode(true);
+            editText.setCursorVisible(true);
+        }
+    } // змінення даних користувача
+
+    private void saveInfo(){
+
+        indicator = 1;
+        invalidateOptionsMenu();
+
+        ArrayList<EditText> et = new ArrayList<>();
+        et.add(name);
+        et.add(phone);
+        et.add(email);
+        et.add(address);
+        et.add(company);
+
+        for (EditText editText: et){
+            editText.setClickable(false);
+            editText.setFocusable(false);
+            editText.setFocusableInTouchMode(false);
+            editText.setCursorVisible(false);
+        }
+
+        contact.setName(name.getText().toString());
+        contact.setNumber(phone.getText().toString());
+        pNumber = phone.getText().toString();
+        contact.setEmail(email.getText().toString());
+        contact.setAddress(address.getText().toString());
+        contact.setCompany(company.getText().toString());
+
+        presenter.editContact(user.getId(),contact);
+
+    }//збереження змін
 }

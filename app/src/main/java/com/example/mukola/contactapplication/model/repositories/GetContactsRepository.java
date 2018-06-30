@@ -6,12 +6,12 @@ import com.example.mukola.contactapplication.model.models.Contact;
 
 import java.util.ArrayList;
 
-public interface GetFavoritesRepository {
-    void getFavorites(@NonNull int userId, @NonNull GetFavoritesCallback callback);
+public interface GetContactsRepository {
+    void getContacts(@NonNull int userId, @NonNull GetContactsCallback callback);
 
-    public interface GetFavoritesCallback {
+    public interface GetContactsCallback {
 
-        void onFavoritesGet(@NonNull ArrayList<Contact> list);
+        void onContactsGet(@NonNull ArrayList<Contact> list);
 
         void notFound();
     }

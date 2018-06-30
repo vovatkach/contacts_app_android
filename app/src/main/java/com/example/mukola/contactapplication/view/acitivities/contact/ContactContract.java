@@ -1,33 +1,37 @@
 package com.example.mukola.contactapplication.view.acitivities.contact;
 
+import android.support.annotation.NonNull;
+
+import com.example.mukola.contactapplication.model.models.Contact;
+
 public interface ContactContract {
     public interface IContactView{
-        void sendMessage(String number);
+        void sendMessage(@NonNull String number);
 
-        void makeCall(String number);
+        void makeCall(@NonNull String number);
 
-        void showToast(String message);
+        void showToast(@NonNull String message);
     }
 
     public interface IContactPresenter{
 
         void detachView();
 
-        void sendMessage(String number);
+        void sendMessage(@NonNull String number);
 
-        void makeCall(String number);
+        void makeCall(@NonNull String number);
 
         void onRequestPermissionsResult(int requestCode,
                                         String permissions[], int[] grantResults,String number);
 
         boolean checkAndRequestPermissions(int permissionCode);
 
-        void addToFavorites(int userId,String contactId);
+        void addToFavorites(@NonNull int userId,@NonNull int contactId);
 
-        void getFavorites(int userId);
+        void deleteFromFavorites(@NonNull int userId,@NonNull int contactId);
 
-        boolean checkIsFavorite(String contactId);
+        void editContact(@NonNull int usedId,@NonNull Contact contact);
 
-        void deleteFromFavorites(int userId,String contactId);
+        void deleteContact(@NonNull int userId,@NonNull int contactId);
     }
 }

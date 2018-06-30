@@ -19,9 +19,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
 import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
 import com.example.mukola.contactapplication.view.acitivities.mainScreen.MainScreenActivity;
@@ -51,9 +53,8 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     @BindView(R.id.rv_contacts_fc)
     RecyclerView list;
 
-    @BindView(R.id.progressBar2)
-    ProgressBar progressBar;
-
+    @BindView(R.id.tv_no_contact_cf)
+    TextView tv;
 
     @NonNull
     private String pNumber;
@@ -83,8 +84,6 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
         return fragment;
     }
 
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -97,10 +96,7 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
 
         presenter.getFavorites(userId);
 
-        presenter.checkFavorites( ((MainScreenActivity) getActivity()).getContacts() );
-
         return view;
-
 
     }
 
@@ -108,9 +104,7 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     public void onResume() {
         super.onResume();
         presenter.getFavorites(userId);
-
-        presenter.checkFavorites( ((MainScreenActivity) getActivity()).getContacts() );
-    }
+        }
 
     @Override
     public void onAttach(Context context) {
@@ -133,7 +127,10 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     }
 
     @Override
-    public void setContactList(List<Person> contacts) {
+    public void setContactList(List<Contact> contacts) {
+
+        list.setVisibility(View.VISIBLE);
+        tv.setVisibility(View.GONE);
 
         list.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -141,27 +138,20 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(lm);
 
-        ArrayList<Person> l = new ArrayList<>(contacts);
-
+        ArrayList<Contact> l = new ArrayList<>(contacts);
 
         ContactListAdapter mAdapter = new ContactListAdapter(l, getActivity());
         // set adapter
         mAdapter.setOnClick(this);
 
-        progressBar.setVisibility(View.GONE);
-
-        if (mAdapter.getItemCount() == 0) {
-            showToast(getString(R.string.no_contact));
-        } else {
-            list.setAdapter(mAdapter);
-        }
+        list.setAdapter(mAdapter);
 
         // set item animator to DefaultAnimator
         list.setItemAnimator(new DefaultItemAnimator());
     }
 
     @Override
-    public void makeCall(final String number) {
+    public void makeCall(final @NonNull String number) {
         pNumber = number;
 
         if (presenter.checkAndRequestPermissions(FavoriteContactsPresenter.REQUEST_ID_CALL_PERMISSIONS)) {
@@ -176,7 +166,7 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     }
 
     @Override
-    public void sendMessage(final String number){
+    public void sendMessage(final @NonNull String number){
         pNumber = number;
         if(presenter.checkAndRequestPermissions(FavoriteContactsPresenter.REQUEST_ID_SMS_PERMISSIONS)) {
 
@@ -191,30 +181,29 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
-        Log.d("PERMIS","FRAGMENT");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         presenter.onRequestPermissionsResult(requestCode, permissions, grantResults,pNumber);
     }
 
     @Override
-    public void onCallClick(String number) {
+    public void onCallClick(@NonNull String number) {
         presenter.makeCall(number);
     }
 
     @Override
-    public void onMessageClick(String number) {
+    public void onMessageClick(@NonNull String number) {
         presenter.sendMessage(number);
     }
 
     @Override
-    public void onUserClick(int position) {
-        presenter.onContactClicked(((MainScreenActivity)getActivity()).getContacts().get(position));
+    public void onUserClick(@NonNull Contact contact) {
+       presenter.onContactClicked(contact);
     }
 
     @Override
-    public void onContactClicked(Person person) {
+    public void onContactClicked(@NonNull Contact contact) {
         if (mListener != null) {
-            mListener.onFavoriteContactsFragmentInteraction(person);
+            mListener.onFavoriteContactsFragmentInteraction(contact);
         }
     }
 
@@ -224,8 +213,9 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     }
 
     @Override
-    public void setProgressBarVisible() {
-        progressBar.setVisibility(View.VISIBLE);
+    public void setvNoFavoriteVisible() {
+        list.setVisibility(View.GONE);
+        tv.setVisibility(View.VISIBLE);
     }
 
     public void setUserId(@NonNull int userId) {
@@ -234,7 +224,7 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
 
 
     public interface OnFavoriteContactsFragmentInteractionListener {
-        void onFavoriteContactsFragmentInteraction(Person person);
+        void onFavoriteContactsFragmentInteraction(@NonNull Contact contact);
     }
 
 }

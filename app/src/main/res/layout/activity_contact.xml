@@ -9,6 +9,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_c"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:titleTextColor="@color/colorWhite"/>
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -32,19 +40,24 @@
                 android:layout_marginTop="19dp"
                 android:src="@drawable/ic_star_border_black_24dp" />
 
-            <TextView
-                android:id="@+id/tv_name_contact"
+            <EditText
+                android:id="@+id/et_name_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="10dp"
-                android:layout_marginStart="20dp"
-                android:padding="12dip"
-                android:text="SomeText"
+                android:layout_marginBottom="19dp"
+                android:layout_marginStart="30dp"
+                android:background="@null"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:text="Name"
                 android:textColor="@color/colorWhite"
-                android:textSize="26sp" />
+                android:textSize="26sp"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
         </RelativeLayout>
 
