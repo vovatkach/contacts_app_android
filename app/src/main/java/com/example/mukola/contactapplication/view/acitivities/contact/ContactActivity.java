@@ -3,6 +3,7 @@ package com.example.mukola.contactapplication.view.acitivities.contact;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -175,10 +176,9 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
 
         company.setText(contact.getCompany());
 
-        Glide
-                .with(this)
-                .load(contact.getPhotoUrl())
-                .into(photo);
+        if(!contact.getPhotoUrl().equals("null")){
+            presenter.getPhoto(contact.getPhotoUrl());
+        }
     }
 
 
@@ -199,6 +199,11 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
     @Override
     public void showToast(String message) {
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void setPhoto(@NonNull Bitmap bitmap) {
+        photo.setImageBitmap(bitmap);
     }
 
     @Override

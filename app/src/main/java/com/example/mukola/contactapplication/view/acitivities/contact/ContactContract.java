@@ -1,5 +1,6 @@
 package com.example.mukola.contactapplication.view.acitivities.contact;
 
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.Contact;
@@ -11,6 +12,8 @@ public interface ContactContract {
         void makeCall(@NonNull String number);
 
         void showToast(@NonNull String message);
+
+        void setPhoto(@NonNull Bitmap bitmap);
     }
 
     public interface IContactPresenter{
@@ -33,5 +36,8 @@ public interface ContactContract {
         void editContact(@NonNull int usedId,@NonNull Contact contact);
 
         void deleteContact(@NonNull int userId,@NonNull int contactId);
+
+        void getPhoto(@NonNull String path);
+
     }
 }

@@ -129,6 +129,8 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     public void setContactList(List<Contact> contacts) {
 
             list.setVisibility(View.VISIBLE);
+            btn.setVisibility(View.GONE);
+            tv.setVisibility(View.GONE);
             list.setLayoutManager(new LinearLayoutManager(getActivity()));
 
             LinearLayoutManager lm = new LinearLayoutManager(getActivity());

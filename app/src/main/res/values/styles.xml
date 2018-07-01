@@ -6,9 +6,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorControlNormal">#c5c5c5</item>
+        <item name="colorControlNormal">@color/colorBlue</item>
         <item name="colorControlActivated">@color/colorBlue</item>
-        <item name="colorControlHighlight">@color/colorBlue</item>
+        <item name="colorControlHighlight">#c5c5c5</item>
         <item name="actionOverflowButtonStyle">@style/MyOverflowButtonStyle</item>
 
 
@@ -20,7 +20,7 @@
     </style>
 
     <style name="AppTheme.WhiteAccent">
-        <item name="colorAccent">@color/colorBlue</item>
+        <item name="colorAccent">@color/colorWhite</item>
 
         <!-- Whatever color you want-->
     </style>
@@ -32,16 +32,6 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" >
 
-
-    </style>
-
-    <style name="MyCustomTheme" parent="AppTheme.AppBarOverlay">
-        <item name="android:actionOverflowButtonStyle">@style/MyCustomTheme.OverFlow</item>
-
-    </style>
-
-    <style name="MyCustomTheme.OverFlow">
-        <item name="android:src">@drawable/ic_more_vert_black_24dp</item>
 
     </style>
 

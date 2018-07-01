@@ -66,7 +66,10 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         view.openImport();
     }
 
-
+    @Override
+    public void openCreateContact() {
+        view.openCreateContact();
+    }
 
 
 }

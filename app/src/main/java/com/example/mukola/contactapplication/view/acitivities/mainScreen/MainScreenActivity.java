@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
+import com.example.mukola.contactapplication.view.acitivities.addContact.AddContactActivity;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 import com.example.mukola.contactapplication.view.acitivities.importActivity.ImportActivity;
 import com.example.mukola.contactapplication.view.fragments.allContacts.AllContactsFragment;
@@ -57,7 +58,9 @@ public class MainScreenActivity extends AppCompatActivity
 
     private ViewPager viewPager;
 
-    ViewPagerAdapter adapter;
+    private ViewPagerAdapter adapter;
+
+    private FloatingActionButton fab;
 
 
     @Override
@@ -66,14 +69,9 @@ public class MainScreenActivity extends AppCompatActivity
         setContentView(R.layout.activity_main_screen);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+         fab = (FloatingActionButton) findViewById(R.id.fab);
+
+         setOnFabListener();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -95,6 +93,15 @@ public class MainScreenActivity extends AppCompatActivity
         initViewPager();
 
         Log.d("Logined users email - ", user.getEmail());
+    }
+
+    private void setOnFabListener(){
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                presenter.openCreateContact();
+            }
+        });
     }
 
     public void initViewPager(){
@@ -194,6 +201,13 @@ public class MainScreenActivity extends AppCompatActivity
     @Override
     public void openImport() {
         Intent intent = new Intent(this, ImportActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void openCreateContact() {
+        Intent intent = new Intent(this, AddContactActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
     }

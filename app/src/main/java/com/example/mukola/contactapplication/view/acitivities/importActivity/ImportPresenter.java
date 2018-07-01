@@ -3,10 +3,15 @@ package com.example.mukola.contactapplication.view.acitivities.importActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.peopleHelper.PeopleHelper;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepository;
@@ -40,11 +45,15 @@ public class ImportPresenter implements ImportContract.IImportPresenter {
     @NonNull
     AddToContactsRepository addToContactsRepository;
 
+    @NonNull
+    private PhotoSaver photoSaver;
+
 
     public ImportPresenter(@NonNull ImportContract.IImportView view, @NonNull Activity activity,@NonNull Context context){
         this.view = view;
         this.activity = activity;
         addToContactsRepository = new AddToContactsRepositoryImpl(context);
+        photoSaver = new PhotoSaver(context);
     }
 
     @Override
@@ -107,9 +116,9 @@ public class ImportPresenter implements ImportContract.IImportPresenter {
     }
 
     @Override
-    public Contact personToContact(@NonNull Person person) {
+    public Contact personToContact(@NonNull Person person,@NonNull final int userId,@NonNull final String type) {
 
-        Contact contact = new Contact();
+        final Contact contact = new Contact();
 
         if (person.getNames() != null) {
             String nm = person.getNames().get(0).getDisplayName();
@@ -166,22 +175,39 @@ public class ImportPresenter implements ImportContract.IImportPresenter {
             contact.setCompany(activity.getString(R.string.no_company));
         }
 
+        contact.setFavorite(false);
+
         if (person.getPhotos() != null) {
-            contact.setPhotoUrl(person.getPhotos().get(0).getUrl());
+
+            Glide.with(activity)
+                    .asBitmap()
+                    .load(person.getPhotos().get(0).getUrl())
+                    .into(new SimpleTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                            contact.setPhotoUrl(photoSaver.saveToInternalStorage(resource));
+                            if (type.equals("add")) {
+                                addToContact(userId, contact);
+                            }else if (type.equals("open")){
+                                openContact(contact);
+                            }
+                        }
+                    });
+
         }
 
-        contact.setFavorite(false);
+
 
        return contact;
     }
 
-    @Override
-    public void openContact(@NonNull Contact contact) {
+
+    private void openContact(@NonNull Contact contact) {
         view.openContact(contact);
     }
 
-    @Override
-    public void addToContact(@NonNull int userId, @NonNull Contact contact){
+
+    private void addToContact(@NonNull int userId, @NonNull Contact contact){
         addToContactsRepository.addToContacts(userId, contact, new AddToContactsRepository.addToContactsCallback() {
             @Override
             public void addedSuccessfull() {

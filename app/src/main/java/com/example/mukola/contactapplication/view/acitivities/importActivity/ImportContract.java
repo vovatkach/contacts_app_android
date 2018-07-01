@@ -9,7 +9,7 @@ import com.google.api.services.people.v1.model.Person;
 
 import java.util.List;
 
-public class ImportContract {
+public interface ImportContract {
     public interface IImportView{
         void showToast(@NonNull String message);
 
@@ -41,11 +41,7 @@ public class ImportContract {
 
         void verification(Intent data);
 
-        Contact personToContact(@NonNull Person person);
-
-        void addToContact(@NonNull int userId, @NonNull Contact contact);
-
-        void openContact(@NonNull Contact contact);
+        Contact personToContact(@NonNull Person person,@NonNull int userId,@NonNull String type);
 
     }
 }

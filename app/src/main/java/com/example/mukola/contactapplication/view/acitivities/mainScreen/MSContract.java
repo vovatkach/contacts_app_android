@@ -25,6 +25,8 @@ public interface MSContract {
         void openFavorite(@NonNull int userId);
 
         void openImport();
+
+        void openCreateContact();
     }
 
     public interface IMainScreenPresenter{
@@ -39,6 +41,7 @@ public interface MSContract {
 
         void openImport();
 
+        void openCreateContact();
 
     }
 }

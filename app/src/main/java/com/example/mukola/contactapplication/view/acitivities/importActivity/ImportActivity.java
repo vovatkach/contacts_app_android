@@ -215,11 +215,11 @@ public class ImportActivity extends AppCompatActivity implements ImportContract.
 
     @Override
     public void onAddClick(@NonNull Person person) {
-        presenter.addToContact(user.getId(),presenter.personToContact(person));
+        presenter.personToContact(person,user.getId(),"add");
     }
 
     @Override
     public void onUserClick(@NonNull Person person) {
-        presenter.openContact(presenter.personToContact(person));
+        presenter.personToContact(person,user.getId(),"open");
     }
 }

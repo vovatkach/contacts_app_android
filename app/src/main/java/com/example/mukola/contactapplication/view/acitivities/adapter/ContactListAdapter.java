@@ -2,6 +2,7 @@ package com.example.mukola.contactapplication.view.acitivities.adapter;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.google.api.services.people.v1.model.Person;
 
@@ -26,7 +28,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private OnItemClicked onClick;
 
-    private Activity activity;
+
+    private PhotoSaver photoSaver;
 
     public interface OnItemClicked {
         void onCallClick(@NonNull String number);
@@ -34,9 +37,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
         void onUserClick(@NonNull Contact contact);
     }
 
-    public ContactListAdapter(ArrayList<Contact> itemsData,Activity activity) {
+    public ContactListAdapter(ArrayList<Contact> itemsData, Context context) {
         this.itemsData = itemsData;
-        this.activity = activity;
+        photoSaver = new PhotoSaver(context);
     }
 
     @Override
@@ -95,14 +98,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
+         viewHolder.name.setText(itemsData.get(position).getName());
 
-                viewHolder.name.setText(itemsData.get(position).getName());
-
-        if (itemsData.get(position).getPhotoUrl()!=null) {
-            Glide
-                    .with(activity)
-                    .load(itemsData.get(position).getPhotoUrl())
-                    .into(viewHolder.photo);
+        if ( itemsData.get(position).getPhotoUrl()!=null && !itemsData.get(position).getPhotoUrl().equals("null")) {
+          viewHolder.photo.setImageBitmap(photoSaver.loadImageFromStorage(itemsData.get(position).getPhotoUrl()));
         }else{
             Log.d("PHOTO","NULL");
         }

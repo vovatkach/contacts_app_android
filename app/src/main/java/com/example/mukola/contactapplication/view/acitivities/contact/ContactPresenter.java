@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
@@ -54,6 +55,9 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     @NonNull
     private UpdateContactRepository updateContactRepository;
 
+    @NonNull
+    private PhotoSaver photoSaver;
+
 
     public ContactPresenter (@NonNull ContactContract.IContactView view,@NonNull Activity activity,
                              @NonNull Context context){
@@ -63,6 +67,7 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
         deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
         deleteFromContactsRepository = new DeleteFromContactsRepositoryImpl(context);
         updateContactRepository = new UpdateContactRepositoryImpl(context);
+        photoSaver = new PhotoSaver(context);
     }
 
 
@@ -178,6 +183,11 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
                 view.showToast(activity.getString(R.string.error));
             }
         });
+    }
+
+    @Override
+    public void getPhoto(@NonNull String path) {
+        view.setPhoto(photoSaver.loadImageFromStorage(path));
     }
 
 
