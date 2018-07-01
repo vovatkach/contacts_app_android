@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1012268347458",
+    "firebase_url": "https://contactapp-207020.firebaseio.com",
+    "project_id": "contactapp-207020",
+    "storage_bucket": "contactapp-207020.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1012268347458:android:a625d3c6ae859516",
+        "android_client_info": {
+          "package_name": "com.example.mukola.contactapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1012268347458-711j9b1ttu1l3v04s1asrv6rjagbbpm3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mukola.contactapplication",
+            "certificate_hash": "622f7bafee7545660d8a322ca0b9bf8a3742cfe2"
+          }
+        },
+        {
+          "client_id": "1012268347458-adhe8r8ad28b2g18knlahlfpem4h890h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIzgHALal2tNmS5Wg14u26VYLtwEkg3_U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1012268347458-adhe8r8ad28b2g18knlahlfpem4h890h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
