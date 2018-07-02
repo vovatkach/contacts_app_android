@@ -27,6 +27,7 @@ import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.view.acitivities.addContact.AddContactActivity;
+import com.example.mukola.contactapplication.view.acitivities.cityReminder.ReminderActivity;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 import com.example.mukola.contactapplication.view.acitivities.importActivity.ImportActivity;
 import com.example.mukola.contactapplication.view.fragments.allContacts.AllContactsFragment;
@@ -145,7 +146,7 @@ public class MainScreenActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             presenter.openImport();
         } else if (id == R.id.nav_gallery) {
-
+            presenter.openCityReminder();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -208,6 +209,13 @@ public class MainScreenActivity extends AppCompatActivity
     @Override
     public void openCreateContact() {
         Intent intent = new Intent(this, AddContactActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+    }
+
+    @Override
+    public void openCityReminder() {
+        Intent intent = new Intent(this, ReminderActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
     }

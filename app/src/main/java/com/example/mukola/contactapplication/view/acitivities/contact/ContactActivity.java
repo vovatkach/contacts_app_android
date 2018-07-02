@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -104,6 +105,7 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_c);
         setSupportActionBar(toolbar);
+        toolbar.setSubtitleTextColor(Color.WHITE);
 
         setTitle(getString(R.string.contact_details));
 
@@ -178,6 +180,9 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
 
         if(!contact.getPhotoUrl().equals("null")){
             presenter.getPhoto(contact.getPhotoUrl());
+        }else {
+            photo.setImageResource(R.drawable.profile);
+            name.setTextColor(getResources().getColor(R.color.colorText));
         }
     }
 

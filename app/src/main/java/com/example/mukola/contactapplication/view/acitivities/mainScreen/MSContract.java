@@ -27,6 +27,8 @@ public interface MSContract {
         void openImport();
 
         void openCreateContact();
+
+        void openCityReminder();
     }
 
     public interface IMainScreenPresenter{
@@ -42,6 +44,8 @@ public interface MSContract {
         void openImport();
 
         void openCreateContact();
+
+        void openCityReminder();
 
     }
 }

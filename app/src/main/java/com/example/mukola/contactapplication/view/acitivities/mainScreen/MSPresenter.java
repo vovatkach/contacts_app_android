@@ -71,5 +71,10 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         view.openCreateContact();
     }
 
+    @Override
+    public void openCityReminder() {
+        view.openCityReminder();
+    }
+
 
 }

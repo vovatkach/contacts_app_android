@@ -2,6 +2,7 @@ package com.example.mukola.contactapplication.view.acitivities.importActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -74,6 +75,7 @@ public class ImportActivity extends AppCompatActivity implements ImportContract.
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_is);
         setSupportActionBar(toolbar);
+        toolbar.setSubtitleTextColor(Color.WHITE);
 
         setTitle(getString(R.string.importT));
 
