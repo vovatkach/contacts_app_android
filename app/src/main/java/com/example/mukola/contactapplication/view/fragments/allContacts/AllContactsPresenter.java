@@ -111,8 +111,15 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
     public void getContacts(@NonNull int userId) {
         getContactsRepository.getContacts(userId, new GetContactsRepository.GetContactsCallback() {
             @Override
-            public void onContactsGet(@NonNull ArrayList<Contact> list) {
-                view.setContactList(list);
+            public void onContactsGet(@NonNull final ArrayList<Contact> list) {
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        view.setContactList(list);
+                    }
+                });
+
             }
 
             @Override

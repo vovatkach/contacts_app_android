@@ -111,7 +111,13 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     @Override
     public void onResume() {
         super.onResume();
-        presenter.getContacts(user.getId());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                presenter.getContacts(user.getId());
+            }
+        }).start();
+
 
     }
 

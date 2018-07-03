@@ -121,8 +121,14 @@ public class FavoriteContactsPresenter implements FavoriteContactsContract.IFavo
     public void getFavorites(int userId) {
         getFavoritesRepository.getFavorites(userId, new GetFavoritesRepository.GetFavoritesCallback() {
             @Override
-            public void onFavoritesGet(@NonNull ArrayList<Contact> list) {
-                view.setContactList(list);
+            public void onFavoritesGet(@NonNull final ArrayList<Contact> list) {
+                activity.runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        view.setContactList(list);
+                    }
+                });
             }
 
             @Override

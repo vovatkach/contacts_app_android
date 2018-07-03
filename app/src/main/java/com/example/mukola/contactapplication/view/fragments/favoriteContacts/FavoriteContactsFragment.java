@@ -103,8 +103,13 @@ public class FavoriteContactsFragment extends Fragment implements FavoriteContac
     @Override
     public void onResume() {
         super.onResume();
-        presenter.getFavorites(userId);
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                presenter.getFavorites(userId);
+            }
+        }).start();
+    }
 
     @Override
     public void onAttach(Context context) {
