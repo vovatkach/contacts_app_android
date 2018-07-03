@@ -39,6 +39,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ImportActivity extends AppCompatActivity implements ImportContract.IImportView,
         GoogleApiClient.OnConnectionFailedListener,
@@ -55,6 +56,11 @@ public class ImportActivity extends AppCompatActivity implements ImportContract.
 
     @BindView(R.id.tv_no_contact_is)
     TextView tv;
+
+    @OnClick(R.id.import_back)
+    void onBackClick(View view) {
+        onBackPressed();
+    }
 
     @NonNull
     private ImportContract.IImportPresenter presenter;

@@ -83,6 +83,11 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
         }
     }
 
+    @OnClick(R.id.contact_back)
+    void onBackClick(View view) {
+        onBackPressed();
+    }
+
     @NonNull
     private ContactContract.IContactPresenter presenter;
 

@@ -1,5 +1,6 @@
 package com.example.mukola.contactapplication.view.fragments.register;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -16,8 +17,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
@@ -37,22 +40,34 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     @NonNull
     private GoogleSignInClient mGoogleSignInClient;
 
-    public RegisterPresenter (@NonNull RegisterContract.IRegisterView view, @NonNull Context context){
+    @NonNull
+    private Activity activity;
+
+
+
+    public RegisterPresenter (@NonNull RegisterContract.IRegisterView view, @NonNull Context context,@NonNull Activity activity){
         this.view = view;
         this.context = context;
+        this.activity = activity;
         registerRepository = new RegisterRepositoryImpl(context);
         getUserRepository = new GetUserRepositoryImpl(context);
         initGoogleSign();
+        signOut();
     }
 
     private void initGoogleSign(){
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+
+        if (isOnline()) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+            // Build a GoogleSignInClient with the options specified by gso.
+            mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
+        }else {
+            view.showToast("Bad internet connection.");
+        }
     }
 
     private void checkIsSigned(){
@@ -63,12 +78,18 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     }
 
     @Override
-    public void register(@NonNull final User user) {
-        getUserRepository.getUser(user.getName(), new GetUserRepository.GetUserCallback() {
+    public void register(@NonNull final User user, final String type) {
+        getUserRepository.getUser(user.getEmail(), new GetUserRepository.GetUserCallback() {
             @Override
             public void foundUser(@NonNull User user) {
-                if (view!=null) {
-                    view.showToast("Current user is already exists!");
+                if (type.equals("google")){
+                    if (view!=null) {
+                        view.openMainScreen(user);
+                    }
+                }else {
+                    if (view != null) {
+                        view.showToast("Current user is already exists!");
+                    }
                 }
             }
 
@@ -116,7 +137,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
             user.setPassword(account.getId());
             user.setNumber(account.getFamilyName());
             user.setAddress(account.getGivenName());
-            register(user);
+            register(user,"google");
             Log.d("Google email",account.getEmail());
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -149,7 +170,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
                 user.setAddress(list.get(2).getText().toString());
                 user.setEmail(list.get(3).getText().toString());
                 user.setPassword(list.get(4).getText().toString());
-                register(user);
+                register(user,"local");
             } else {
                 view.showToast("Passwords do not match!");
             }
@@ -194,4 +215,29 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
             return false;
         }
     }
+
+    private boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false;
+    }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // ...
+                    }
+                });
+    }
+
+
 }

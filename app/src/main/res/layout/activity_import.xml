@@ -11,6 +11,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar_is"
             android:layout_width="match_parent"
@@ -18,7 +19,26 @@
             android:background="?attr/colorPrimary"
             android:minHeight="?attr/actionBarSize"
             android:theme="?attr/actionBarTheme"
-            app:titleTextColor="@color/colorWhite"/>
+            app:subtitleTextColor="@color/colorWhite"
+            app:titleTextColor="@color/colorWhite">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/import_back"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+                    tools:ignore="VectorDrawableCompat" />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+
+
 
         <RelativeLayout
             android:layout_width="match_parent"

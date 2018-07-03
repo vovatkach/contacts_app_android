@@ -22,9 +22,10 @@ public interface RegisterContract {
         void createUser(@NonNull List<EditText> list);
         void openSignIn();
         void detachView();
-        void register(@NonNull final User user);
+        void register(@NonNull final User user,String type);
         void handleSignInResult(Task<GoogleSignInAccount> completedTask);
         void signIn();
         GoogleSignInClient getGoogleSignInClient();
+
     }
 }

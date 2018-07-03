@@ -68,7 +68,7 @@ public class MainScreenActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_m);
         setSupportActionBar(toolbar);
          fab = (FloatingActionButton) findViewById(R.id.fab);
 
@@ -84,8 +84,6 @@ public class MainScreenActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         ButterKnife.bind(this);
-
-        getSupportActionBar().hide();
 
         presenter = new MSPresenter(this,this);
 

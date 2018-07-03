@@ -54,6 +54,11 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
 
     public static final int REQUEST_ID_SMS_PERMISSIONS = 2;
 
+    public static final int REQUEST_FINE_LOCATION_PERMISSIONS = 3;
+
+
+
+
     @NonNull
     private ReminderContract.IContactView view;
 
@@ -102,7 +107,10 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
 
     private void initModules(){
         view.setProgressBarVisible();
-        checkLocation();
+        if(checkAndRequestPermissions(ReminderPresenter.REQUEST_FINE_LOCATION_PERMISSIONS)) {
+            checkLocation();
+
+        }
         initGoogleApi();
         if (mGoogleApiClient != null) {
             mGoogleApiClient.connect();
@@ -211,13 +219,6 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
         // Request location updates
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
@@ -243,8 +244,6 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
         Geocoder gc = new Geocoder(context);
         if(gc.isPresent()){
             List<Address> list = null;
-            Log.d("ALLAH",String.valueOf(location.getLatitude()));
-            Log.d("AKBAR",String.valueOf(location.getLongitude()));
             try {
                 list = gc.getFromLocation(location.getLatitude(), location.getLongitude(),1);
                 Address address = list.get(0);
@@ -329,7 +328,24 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
                         listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_ID_SMS_PERMISSIONS);
                 return false;
             }
+        }else if(permissionCode == REQUEST_FINE_LOCATION_PERMISSIONS){
+
+            int finepermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION);
+            int coarsepermission = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION);
+
+
+            List<String> listPermissionsNeeded = new ArrayList<>();
+
+            if (finepermission != PackageManager.PERMISSION_GRANTED&&coarsepermission != PackageManager.PERMISSION_GRANTED) {
+                listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+                listPermissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+
+                ActivityCompat.requestPermissions(activity,
+                        listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), REQUEST_FINE_LOCATION_PERMISSIONS);
+                return false;
+            }
         }
+
 
         return true;
     }
@@ -395,6 +411,41 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
                         if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.SEND_SMS)
                                 ) {
                             showDialog(REQUEST_ID_SMS_PERMISSIONS);
+                        }
+                        else {
+                            explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?");
+                        }
+                    }
+                }
+                break;
+
+            case REQUEST_FINE_LOCATION_PERMISSIONS:
+                Log.d("TAG", "Permission SMS called-------");
+
+                Map<String, Integer> perm1 = new HashMap<>();
+                perm1.put(Manifest.permission.ACCESS_FINE_LOCATION, PackageManager.PERMISSION_GRANTED);
+                perm1.put(Manifest.permission.ACCESS_COARSE_LOCATION, PackageManager.PERMISSION_GRANTED);
+
+                if (grantResults.length > 0) {
+                    perm1.put(permissions[0], grantResults[0]);
+
+                    if (perm1.get(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED&&
+                            perm1.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        //
+                    } else {
+
+                        Log.d("TAG", "Some permissions are not granted ask again ");
+
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_FINE_LOCATION)
+                                ) {
+                            showDialog(REQUEST_FINE_LOCATION_PERMISSIONS);
+                        }
+                        else {
+                            explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?");
+                        }
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_COARSE_LOCATION)
+                                ) {
+                            showDialog(REQUEST_FINE_LOCATION_PERMISSIONS);
                         }
                         else {
                             explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?");

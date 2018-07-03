@@ -74,7 +74,7 @@ public class RegisterFragment extends Fragment implements RegisterContract.IRegi
 
         unbinder = ButterKnife.bind(this,view);
 
-        presenter = new RegisterPresenter(this,getContext());
+        presenter = new RegisterPresenter(this,getContext(),getActivity());
 
         return view;
     }

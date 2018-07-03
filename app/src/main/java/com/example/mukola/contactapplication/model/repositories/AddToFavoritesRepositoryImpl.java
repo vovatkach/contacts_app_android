@@ -24,7 +24,7 @@ public class AddToFavoritesRepositoryImpl implements AddToFavoritesRepository {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
 
-        long rowID = 0;
+        long rowID;
         ContentValues cv = new ContentValues();
         Log.d("LOG_TAG", "--- Insert in favorites: ---");
 

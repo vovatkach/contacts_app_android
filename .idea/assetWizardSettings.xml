@@ -78,7 +78,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_settings_applications_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/Applications/Android%20Studio.app/Contents/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_back_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -88,9 +88,12 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="4687a6" />
-                            <entry key="outputName" value="ic_settings_applications_black_24dp" />
+                            <entry key="color" value="fbf9f4" />
+                            <entry key="height" value="34" />
+                            <entry key="outputName" value="ic_arrow_back_black_24dp" />
+                            <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="$USER_HOME$" />
+                            <entry key="width" value="34" />
                           </map>
                         </option>
                       </PersistentState>

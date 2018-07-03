@@ -41,6 +41,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class ReminderActivity extends AppCompatActivity implements ReminderContract.IContactView,
                                     ContactListAdapter.OnItemClicked
@@ -60,6 +61,11 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
 
     @BindView(R.id.progressBar_city)
     ProgressBar progressBar;
+
+    @OnClick(R.id.city_back)
+    void onBackClick(View view) {
+        onBackPressed();
+    }
 
     @NonNull
     private User user;

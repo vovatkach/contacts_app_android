@@ -76,6 +76,11 @@ public class AddContactActivity extends AppCompatActivity implements AddContactC
         }).start();
         }
 
+    @OnClick(R.id.new_back)
+    void onBackClick(View view) {
+        onBackPressed();
+    }
+
     private static final int GALLERY_REQUEST = 1;
 
     @NonNull

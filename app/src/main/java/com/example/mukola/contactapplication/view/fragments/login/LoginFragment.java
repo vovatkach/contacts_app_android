@@ -123,7 +123,7 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
 
     @Override
     public void showToast(@NonNull String message) {
-        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
     }
 
     @Override
