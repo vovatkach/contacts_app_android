@@ -5,15 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,8 +31,6 @@ import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,14 +256,11 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
 
 
 
-    @Override
-    public void onCallClick(@NonNull String number) {
-        presenter.makeCall(number);
-    }
+
 
     @Override
-    public void onMessageClick(@NonNull String number) {
-        presenter.sendMessage(number);
+    public void onFavClick(@NonNull Contact contact) {
+
     }
 
     @Override

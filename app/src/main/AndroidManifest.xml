@@ -7,8 +7,10 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
 
     <application
         android:allowBackup="true"
@@ -31,9 +33,11 @@
             android:label="@string/title_activity_main_screen"
             android:theme="@style/AppTheme" />
         <activity android:name=".view.acitivities.contact.ContactActivity" />
-        <activity android:name=".view.acitivities.importActivity.ImportActivity" />
+        <activity android:name=".view.acitivities.archiveActivity.ArchiveActivity" />
         <activity android:name=".view.acitivities.addContact.AddContactActivity" />
-        <activity android:name=".view.acitivities.cityReminder.ReminderActivity"></activity>
+        <activity android:name=".view.acitivities.cityReminder.ReminderActivity" />
+        <activity android:name=".view.acitivities.cleanUp.CleanUpActivity" />
+        <activity android:name=".view.acitivities.favorite.FavoriteActivity"></activity>
     </application>
 
 </manifest>

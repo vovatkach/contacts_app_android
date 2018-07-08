@@ -67,6 +67,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
 
+    implementation 'com.mindorks:placeholderview:0.7.1'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+
 
 }
 

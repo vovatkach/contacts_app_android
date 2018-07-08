@@ -5,9 +5,6 @@ import android.support.annotation.NonNull;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import com.example.mukola.contactapplication.model.models.Contact;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public interface AddContactContract {

@@ -19,6 +19,8 @@ import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromBlacklistRepository;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromBlacklistRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromContactsRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepository;
@@ -56,6 +58,9 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     private UpdateContactRepository updateContactRepository;
 
     @NonNull
+    private DeleteFromBlacklistRepository deleteFromBlacklistRepository;
+
+    @NonNull
     private PhotoSaver photoSaver;
 
 
@@ -67,6 +72,7 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
         deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
         deleteFromContactsRepository = new DeleteFromContactsRepositoryImpl(context);
         updateContactRepository = new UpdateContactRepositoryImpl(context);
+        deleteFromBlacklistRepository = new DeleteFromBlacklistRepositoryImpl(context);
         photoSaver = new PhotoSaver(context);
     }
 
@@ -170,11 +176,12 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     }
 
     @Override
-    public void deleteContact(@NonNull int userId, @NonNull int contactId) {
-        deleteFromContactsRepository.deleteFromContacts(userId, contactId,
+    public void deleteContact(@NonNull final int userId, @NonNull final Contact contact) {
+        deleteFromContactsRepository.deleteFromContacts(userId, contact.getId(),
                 new DeleteFromContactsRepository.DeleteFromContactsCallback() {
             @Override
             public void deletedSuccessfull() {
+                deleteFromBlacklist(userId,contact.getBlacklistId());
                 view.showToast(activity.getString(R.string.deleted_successfully));
             }
 
@@ -188,6 +195,22 @@ public class ContactPresenter implements ContactContract.IContactPresenter{
     @Override
     public void getPhoto(@NonNull String path) {
         view.setPhoto(photoSaver.loadImageFromStorage(path));
+    }
+
+    @Override
+    public void deleteFromBlacklist(@NonNull int userId, @NonNull String contactId) {
+        deleteFromBlacklistRepository.deleteFromBlacklist(userId, contactId, new DeleteFromBlacklistRepository.deleteFromBlacklistCallback() {
+            @Override
+            public void deletedSuccessfull() {
+                Log.d("DELETED BLACKL","SUCCESSFULL");
+            }
+
+            @Override
+            public void notSuccessfull() {
+                Log.d("DELETED BLACKL","ERROR");
+
+            }
+        });
     }
 
 

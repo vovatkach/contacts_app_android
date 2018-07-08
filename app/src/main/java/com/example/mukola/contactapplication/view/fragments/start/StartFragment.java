@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import com.example.mukola.contactapplication.R;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;

@@ -1,7 +1,6 @@
 package com.example.mukola.contactapplication.view.acitivities.adapter;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,11 +11,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
-import com.google.api.services.people.v1.model.Person;
 
 import java.util.ArrayList;
 
@@ -28,17 +25,18 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private OnItemClicked onClick;
 
+    private Context  context;
 
     private PhotoSaver photoSaver;
 
     public interface OnItemClicked {
-        void onCallClick(@NonNull String number);
-        void onMessageClick(@NonNull String number);
+        void onFavClick(@NonNull Contact contact);
         void onUserClick(@NonNull Contact contact);
     }
 
     public ContactListAdapter(ArrayList<Contact> itemsData, Context context) {
         this.itemsData = itemsData;
+        this.context = context;
         photoSaver = new PhotoSaver(context);
     }
 
@@ -65,20 +63,13 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     }
 
     private void initListeners(ViewHolder viewHolder,final int position){
-        viewHolder.call.setOnClickListener(new View.OnClickListener() {
+        viewHolder.fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClick.onCallClick(itemsData.get(position).getNumber());
-                Log.d("CALL","CLICKED");
+                onClick.onFavClick(itemsData.get(position));
             }
         });
 
-        viewHolder.message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClick.onMessageClick(itemsData.get(position).getNumber());
-            }
-        });
 
         viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +89,19 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
-         viewHolder.name.setText(itemsData.get(position).getName());
+        viewHolder.name.setText(itemsData.get(position).getName());
+
+        viewHolder.phone.setText(itemsData.get(position).getNumber());
+
+        viewHolder.email.setText(itemsData.get(position).getEmail());
+
+        if (itemsData.get(position).isFavorite()){
+            viewHolder.fav.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_star_black_24dp));
+        }else {
+            viewHolder.fav.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_star_border_black_24dp));
+
+        }
+
 
         if ( itemsData.get(position).getPhotoUrl()!=null && !itemsData.get(position).getPhotoUrl().equals("null")) {
           viewHolder.photo.setImageBitmap(photoSaver.loadImageFromStorage(itemsData.get(position).getPhotoUrl()));
@@ -112,22 +115,29 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         public TextView name;
 
+        public TextView phone;
+
+        public TextView email;
+
         CircleImageView photo;
 
-        ImageView call;
 
-        ImageView message;
+
+        ImageView fav;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
 
             name = (TextView) itemLayoutView.findViewById(R.id.tv_name_ci);
 
+            phone = (TextView) itemLayoutView.findViewById(R.id.tv_number_ci);
+
+            email = (TextView) itemLayoutView.findViewById(R.id.tv_email_ci);
+
             photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image);
 
-            call = (ImageView) itemLayoutView.findViewById(R.id.imgView_call_ci);
+            fav = (ImageView) itemLayoutView.findViewById(R.id.imgView_fav_ci);
 
-            message = (ImageView) itemLayoutView.findViewById(R.id.imgView_message_ci);
         }
     }
 

@@ -63,6 +63,10 @@ public class AddToContactsRepositoryImpl implements AddToContactsRepository{
         Log.d("LOG_TAG", "isFavorite = " + s);
         cv.put(DatabaseContract.CONTACTS.COLUMN_IS_FAVORITE, s);
 
+        Log.d("LOG_TAG", "blacklistId = " + contact.getBlacklistId());
+        cv.put(DatabaseContract.CONTACTS.COLUMN_BLACKLIST_ID, contact.getBlacklistId());
+
+
         rowID = database.insert(DatabaseContract.CONTACTS.TABLE, null, cv);
         if (rowID == -1){
             callback.notSuccessfull();

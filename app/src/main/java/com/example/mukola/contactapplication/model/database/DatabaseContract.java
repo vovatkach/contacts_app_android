@@ -23,6 +23,29 @@ public class DatabaseContract {
         public static  String COLUMN_COMPANY = "company";
         public static  String COLUMN_PHOTO_URL = "photoUrl";
         public static  String COLUMN_IS_FAVORITE = "isFavorite";
+        public static  String COLUMN_BLACKLIST_ID = "blacklistId";
+
+    }
+
+    public static class ARCHIVED {
+        public static  String TABLE = "archived";
+        public static  String COLUMN_ID = "id";
+        public static  String COLUMN_USER_ID = "userId";
+        public static  String COLUMN_NAME = "name";
+        public static  String COLUMN_NUMBER = "number";
+        public static  String COLUMN_EMAIL = "email";
+        public static  String COLUMN_ADDRESS = "address";
+        public static  String COLUMN_COMPANY = "company";
+        public static  String COLUMN_PHOTO_URL = "photoUrl";
+        public static  String COLUMN_IS_FAVORITE = "isFavorite";
+        public static  String COLUMN_BLACKLIST_ID = "blacklistId";
+    }
+
+    public static class BLACKLIST {
+        public static  String TABLE = "blacklist";
+        public static  String COLUMN_ID = "id";
+        public static  String COLUMN_USER_ID = "userId";
+        public static  String COLUMN_PERSON_ID = "personId";
     }
 
 

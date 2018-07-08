@@ -20,8 +20,10 @@ public class Contact implements Serializable {
 
     private boolean isFavorite;
 
+    private String blacklistId;
+
     public Contact(int id, String name, String number, String email,
-                   String address, String company, String photoUrl){
+                   String address, String company, String photoUrl,String blacklistId){
         this.id = id;
         this.name = name;
         this.number = number;
@@ -29,6 +31,7 @@ public class Contact implements Serializable {
         this.address = address;
         this.company = company;
         this.photoUrl = photoUrl;
+        this.blacklistId = blacklistId;
     }
 
     public Contact(){}
@@ -95,5 +98,13 @@ public class Contact implements Serializable {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public String getBlacklistId() {
+        return blacklistId;
+    }
+
+    public void setBlacklistId(String blacklistId) {
+        this.blacklistId = blacklistId;
     }
 }

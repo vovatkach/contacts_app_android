@@ -25,18 +25,15 @@ import com.example.mukola.contactapplication.model.repositories.GetAllCitiesRepo
 import com.example.mukola.contactapplication.model.repositories.GetAllCitiesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetContactsInCityRepository;
 import com.example.mukola.contactapplication.model.repositories.GetContactsInCityRepositoryImpl;
-import com.example.mukola.contactapplication.model.repositories.GetContactsRepository;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static android.support.constraint.Constraints.TAG;

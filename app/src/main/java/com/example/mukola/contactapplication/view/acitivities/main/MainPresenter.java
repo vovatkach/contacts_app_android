@@ -2,10 +2,7 @@ package com.example.mukola.contactapplication.view.acitivities.main;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.ContentFrameLayout;
-import android.util.Log;
 
-import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
@@ -15,10 +12,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-
-import butterknife.OnClick;
 
 public class MainPresenter implements MainContract.IMainPresenter {
 

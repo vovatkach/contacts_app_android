@@ -32,12 +32,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
                 android:text="TextView"
                 android:textColor="@color/colorText"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_number_ci"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="TextView"
+                android:textColor="@color/colorText"
+                android:textSize="14sp"
+                 />
+
+            <TextView
+                android:id="@+id/tv_email_ci"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:text="TextView"
+                android:textColor="@color/colorText"
+                android:textSize="14sp"
+                 />
 
         </LinearLayout>
 
@@ -49,22 +73,18 @@
 
 
             <ImageView
-                android:id="@+id/imgView_call_ci"
+                android:id="@+id/imgView_fav_ci"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="TODO"
-                app:srcCompat="@drawable/ic_call_black_24dp"
+                app:srcCompat="@drawable/ic_star_black_24dp"
                 tools:ignore="VectorDrawableCompat"
                 android:layout_marginBottom="10dp"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="5dp"
 
-            <ImageView
-                android:id="@+id/imgView_message_ci"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:contentDescription="TODO"
-                app:srcCompat="@drawable/ic_sms_black_24dp"
-                tools:ignore="VectorDrawableCompat" />
+               />
+
         </LinearLayout>
 
 

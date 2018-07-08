@@ -6,48 +6,61 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
+import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
 import com.example.mukola.contactapplication.view.acitivities.addContact.AddContactActivity;
 import com.example.mukola.contactapplication.view.acitivities.cityReminder.ReminderActivity;
+import com.example.mukola.contactapplication.view.acitivities.cleanUp.CleanUpActivity;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
-import com.example.mukola.contactapplication.view.acitivities.importActivity.ImportActivity;
-import com.example.mukola.contactapplication.view.fragments.allContacts.AllContactsFragment;
-import com.example.mukola.contactapplication.view.fragments.favoriteContacts.FavoriteContactsFragment;
-import com.google.api.services.people.v1.model.Person;
+import com.example.mukola.contactapplication.view.acitivities.favorite.FavoriteActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 
 public class MainScreenActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MSContract.IMainScreenView,
-        AllContactsFragment.OnAllContactsFragmentInteractionListener,
-        FavoriteContactsFragment.OnFavoriteContactsFragmentInteractionListener
-{
+         ContactListAdapter.OnItemClicked {
 
+    @BindView(R.id.rv_contacts_ms)
+    RecyclerView list;
 
+    @BindView(R.id.tv_no_contact_ms)
+    TextView tv;
 
+    @BindView(R.id.btn_import_ms)
+    Button btn;
+
+    @OnClick(R.id.btn_import_ms)
+    void onImportClick(View view) {
+        presenter.openCleanUp();
+    }
+
+    @OnClick(R.id.imageview_favorite)
+    void onFavoriteClick(View view) {
+        presenter.openFavorite();
+    }
 
     @Nullable
     private MSContract.IMainScreenPresenter presenter;
@@ -55,14 +68,11 @@ public class MainScreenActivity extends AppCompatActivity
     @NonNull
     private User user;
 
-    private TabLayout tabLayout;
-
-    private ViewPager viewPager;
-
-    private ViewPagerAdapter adapter;
-
+    @NonNull
     private FloatingActionButton fab;
 
+    @NonNull
+    private  TextView  tv_email_drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +95,30 @@ public class MainScreenActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-        presenter = new MSPresenter(this,this);
+
+
+        presenter = new MSPresenter(this,this,this);
 
         user = getData();
 
-        initViewPager();
+        initView();
+
+        presenter.getContacts(user.getId());
+
 
         Log.d("Logined users email - ", user.getEmail());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.getContacts(user.getId());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
     }
 
     private void setOnFabListener(){
@@ -103,36 +130,16 @@ public class MainScreenActivity extends AppCompatActivity
         });
     }
 
-    public void initViewPager(){
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
-    }
-
-    private void setupViewPager(ViewPager viewPager) {
-
-        adapter = new ViewPagerAdapter(getSupportFragmentManager());
-
-        presenter.openAllContacts();
-
-        presenter.openFavorite(user.getId());
-
-        viewPager.setAdapter(adapter);
-    }
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-
-
 
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -142,10 +149,13 @@ public class MainScreenActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_import) {
-            presenter.openImport();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+            drawer.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_reminder) {
             presenter.openCityReminder();
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_clean) {
+            presenter.openCleanUp();
 
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -170,11 +180,7 @@ public class MainScreenActivity extends AppCompatActivity
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void openAllContacts() {
-        AllContactsFragment fr = AllContactsFragment.newInstance(user);
-        adapter.addFragment(fr,this.getString(R.string.all_contacts) );
-    }
+
 
     @Override
     public void openContact(@NonNull Contact contact, int userId) {
@@ -184,15 +190,10 @@ public class MainScreenActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    @Override
-    public void openFavorite(int userId) {
-        FavoriteContactsFragment afr = FavoriteContactsFragment.newInstance(userId);
-        adapter.addFragment(afr , this.getString(R.string.favorite_contacts));
-    }
 
     @Override
-    public void openImport() {
-        Intent intent = new Intent(this, ImportActivity.class);
+    public void openCleanUp() {
+        Intent intent = new Intent(this, CleanUpActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
     }
@@ -211,51 +212,64 @@ public class MainScreenActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+
     @Override
-    public void onAllContactsFragmentInteraction(@NonNull Contact contact) {
+    public void setImportButtonVisible() {
+        list.setVisibility(View.GONE);
+        tv.setVisibility(View.VISIBLE);
+        btn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setContactList(List<Contact> contacts) {
+
+        list.setVisibility(View.VISIBLE);
+        btn.setVisibility(View.GONE);
+        tv.setVisibility(View.GONE);
+        list.setLayoutManager(new LinearLayoutManager(this));
+
+        LinearLayoutManager lm = new LinearLayoutManager(this);
+        lm.setOrientation(LinearLayoutManager.VERTICAL);
+        list.setLayoutManager(lm);
+
+        ArrayList<Contact> l = new ArrayList<>(contacts);
+
+        ContactListAdapter mAdapter = new ContactListAdapter(l, this);
+        // set adapter
+        mAdapter.setOnClick(this);
+
+        list.setAdapter(mAdapter);
+
+        // set item animator to DefaultAnimator
+        list.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    public void initView(){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View headerView = navigationView.getHeaderView(0);
+
+        tv_email_drawer = headerView.findViewById(R.id.textView_user_email_draw);
+
+        tv_email_drawer.setText(user.getEmail());
+    }
+
+    @Override
+    public void openFavorite() {
+        Intent intent = new Intent(this, FavoriteActivity.class);
+        intent.putExtra("user",user);
+        startActivity(intent);
+    }
+
+
+    @Override
+    public void onFavClick(@NonNull Contact contact) {
+
+    }
+
+    @Override
+    public void onUserClick(@NonNull Contact contact) {
         presenter.openContact(contact,user.getId());
     }
-
-    @Override
-    public void onImportClick() {
-        presenter.openImport();
-    }
-
-    @Override
-    public void onFavoriteContactsFragmentInteraction(@NonNull Contact contact) {
-        presenter.openContact(contact,user.getId());
-    }
-
-
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return mFragmentList.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return mFragmentList.size();
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
-        }
-    }
-
 }
 
 

@@ -1,11 +1,10 @@
 package com.example.mukola.contactapplication.view.acitivities.main;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
@@ -14,9 +13,6 @@ import com.example.mukola.contactapplication.view.acitivities.mainScreen.MainScr
 import com.example.mukola.contactapplication.view.fragments.login.LoginFragment;
 import com.example.mukola.contactapplication.view.fragments.register.RegisterFragment;
 import com.example.mukola.contactapplication.view.fragments.start.StartFragment;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.Task;
 
 import butterknife.ButterKnife;
 

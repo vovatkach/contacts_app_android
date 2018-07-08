@@ -1,8 +1,8 @@
 package com.example.mukola.contactapplication.view.acitivities.adapter;
 
 
-
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.mukola.contactapplication.R;
-import com.google.api.services.people.v1.model.Person;
+import com.example.mukola.contactapplication.model.database.PhotoSaver;
+import com.example.mukola.contactapplication.model.models.Contact;
 
 import java.util.ArrayList;
 
@@ -22,20 +22,28 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContactsListAdapter.ViewHolder> {
 
-    private ArrayList<Person> itemsData;
+    private ArrayList<Contact> itemsData;
 
     private OnItemClicked onClick;
 
     private Activity activity;
 
+    private Context context;
+
+    private PhotoSaver photoSaver;
+
     public interface OnItemClicked {
-        void onAddClick(@NonNull Person person);
-        void onUserClick(@NonNull Person person);
+        void onAddClick(@NonNull Contact contact);
+        void onFavoriteClick(@NonNull Contact contact);
+        void onArchiveClick(@NonNull Contact contact);
+        void onUserClick(@NonNull Contact contact);
     }
 
-    public ImportContactsListAdapter(ArrayList<Person> itemsData,Activity activity) {
+    public ImportContactsListAdapter(ArrayList<Contact> itemsData, Activity activity, Context context) {
         this.itemsData = itemsData;
         this.activity = activity;
+        photoSaver = new PhotoSaver(context);
+        this.context = context;
     }
 
     @Override
@@ -68,6 +76,20 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
             }
         });
 
+        viewHolder.archive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.onArchiveClick(itemsData.get(position));
+            }
+        });
+
+        viewHolder.fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClick.onFavoriteClick(itemsData.get(position));
+            }
+        });
+
         viewHolder.name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,21 +108,17 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
-        if (itemsData.get(position).getNames()!=null) {
-            String nm = itemsData.get(position).getNames().get(0).getDisplayName();
-            if (nm!=null){
-                viewHolder.name.setText(nm);
-            }else{
-                viewHolder.name.setText(activity.getString(R.string.no_name));
-            }
-        }
-        if (itemsData.get(position).getPhotos()!=null) {
-            Glide
-                    .with(activity)
-                    .load(itemsData.get(position).getPhotos().get(0).getUrl())
-                    .into(viewHolder.photo);
+        viewHolder.name.setText(itemsData.get(position).getName());
+
+        viewHolder.number.setText(itemsData.get(position).getNumber());
+
+        viewHolder.email.setText(itemsData.get(position).getEmail());
+
+        if ( itemsData.get(position).getPhotoUrl()!=null && !itemsData.get(position).getPhotoUrl().equals("null")) {
+            viewHolder.photo.setImageBitmap(photoSaver.loadImageFromStorage(itemsData.get(position).getPhotoUrl()));
         }else{
             Log.d("PHOTO","NULL");
+            viewHolder.photo.setImageResource(R.drawable.profile);
 
         }
     }
@@ -110,9 +128,18 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
         public TextView name;
 
+        public TextView number;
+
+        public TextView email;
+
+
         CircleImageView photo;
 
         ImageView add;
+
+        ImageView archive;
+
+        ImageView fav;
 
 
         public ViewHolder(View itemLayoutView) {
@@ -120,10 +147,18 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
             name = (TextView) itemLayoutView.findViewById(R.id.tv_name_ici);
 
+            number = (TextView) itemLayoutView.findViewById(R.id.tv_number_ici);
+
+            email = (TextView) itemLayoutView.findViewById(R.id.tv_email_ici);
 
             photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image_ici);
 
             add = (ImageView) itemLayoutView.findViewById(R.id.img_aff_ici);
+
+            archive = (ImageView) itemLayoutView.findViewById(R.id.img_archive_ici);
+
+            fav = (ImageView) itemLayoutView.findViewById(R.id.img_vip_ici);
+
         }
     }
 

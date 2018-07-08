@@ -35,9 +35,11 @@ public interface ContactContract {
 
         void editContact(@NonNull int usedId,@NonNull Contact contact);
 
-        void deleteContact(@NonNull int userId,@NonNull int contactId);
+        void deleteContact(@NonNull int userId,@NonNull Contact contact);
 
         void getPhoto(@NonNull String path);
+
+        void deleteFromBlacklist(@NonNull int userId,@NonNull String contactId);
 
     }
 }

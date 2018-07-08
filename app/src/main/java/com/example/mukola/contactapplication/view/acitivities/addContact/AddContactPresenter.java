@@ -2,9 +2,7 @@ package com.example.mukola.contactapplication.view.acitivities.addContact;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -15,12 +13,6 @@ import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepositoryImpl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -79,6 +71,8 @@ public class AddContactPresenter implements AddContactContract.IContactPresenter
         }else {
             contact.setCompany(activity.getString(R.string.no_company));
         }
+
+        contact.setBlacklistId("null");
 
         if (checkBox.isChecked()){
             contact.setFavorite(true);

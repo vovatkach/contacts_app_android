@@ -3,9 +3,6 @@ package com.example.mukola.contactapplication.view.acitivities.main;
 import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.User;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.tasks.Task;
 
 public interface MainContract {
     public interface IMainView{

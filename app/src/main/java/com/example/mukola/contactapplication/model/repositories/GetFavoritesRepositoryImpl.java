@@ -44,6 +44,7 @@ public class GetFavoritesRepositoryImpl implements GetFavoritesRepository{
         int companyIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_COMPANY);
         int photoUrlIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_PHOTO_URL);
         int isFavoriteIndex = c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_IS_FAVORITE);
+        int blacklistIndex =  c.getColumnIndex(DatabaseContract.CONTACTS.COLUMN_BLACKLIST_ID);
 
         if (c.moveToFirst()) {
             do {
@@ -77,6 +78,9 @@ public class GetFavoritesRepositoryImpl implements GetFavoritesRepository{
                 } else if (c.getString(isFavoriteIndex).equals("false")) {
                     con.setFavorite(false);
                 }
+
+                Log.d("CONTACT blacklistId - ", "" + c.getString(blacklistIndex));
+                con.setBlacklistId(c.getString(blacklistIndex));
 
                 contacts.add(con);
 

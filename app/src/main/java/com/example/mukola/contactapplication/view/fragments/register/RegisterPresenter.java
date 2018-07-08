@@ -11,7 +11,6 @@ import com.example.mukola.contactapplication.model.repositories.GetUserRepositor
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.RegisterRepository;
 import com.example.mukola.contactapplication.model.repositories.RegisterRepositoryImpl;
-import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
