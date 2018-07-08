@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +39,10 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
     @BindView(R.id.tv_no_contact_is)
     TextView tv;
 
+    @BindView(R.id.swipeRefreshLayoutA)
+    SwipeRefreshLayout swipeRefreshLayout;
+
+
     @OnClick(R.id.import_back)
     void onBackClick(View view) {
         onBackPressed();
@@ -66,6 +71,7 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
         presenter = new ArchivePresenter(this,this,this);
 
         getData();
+        initRefresh();
 
         presenter.getArchive(user.getId());
 
@@ -155,4 +161,25 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
         presenter.openContact(contact);
     }
 
+
+    private void initRefresh(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                refreshItems();
+            }
+        });
+
+
+    }
+    void refreshItems() {
+        presenter.getArchive(user.getId());
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+
+        swipeRefreshLayout.setRefreshing(false);
+    }
 }

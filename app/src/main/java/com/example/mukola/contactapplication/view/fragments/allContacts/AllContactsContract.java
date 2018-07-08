@@ -33,5 +33,7 @@ public interface AllContactsContract {
 
          void getBlacklist(@NonNull int userId);
 
+         void addToBlackList(@NonNull int userId,@NonNull String contactId);
+
     }
 }

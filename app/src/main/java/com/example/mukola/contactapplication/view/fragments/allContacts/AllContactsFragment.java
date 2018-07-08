@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,9 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     @BindView(R.id.tv_no_contact_af)
     TextView tv;
+
+    @BindView(R.id.swipeRefreshLayoutAll)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @NonNull
     private User user;
@@ -72,13 +76,8 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
         presenter = new AllContactsPresenter(this,getActivity(),getContext());
 
-        presenter.getBlacklist(user.getId());
-
-        if(((CleanUpActivity) getActivity()).getContacts()==null){
-            setImportButtonVisible();
-        }else {
-            setContactList(((CleanUpActivity) getActivity()).getContacts());
-        }
+        initRefresh();
+        initList();
 
         return view;
     }
@@ -111,6 +110,15 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         unbinder.unbind();
         presenter.detachView();
         getActivity().finish();
+    }
+
+    private void initList(){
+        presenter.getBlacklist(user.getId());
+        if(((CleanUpActivity) getActivity()).getContacts()==null){
+            setImportButtonVisible();
+        }else {
+            setContactList(((CleanUpActivity) getActivity()).getContacts());
+        }
     }
 
 
@@ -189,17 +197,44 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     @Override
     public void onAddClick(@NonNull Contact contact) {
         presenter.addToContact(user.getId(),contact);
+        presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        initList();
     }
 
     @Override
     public void onFavoriteClick(@NonNull Contact contact) {
         contact.setFavorite(true);
         presenter.addToContact(user.getId(),contact);
+        presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        initList();
     }
 
     @Override
     public void onArchiveClick(@NonNull Contact contact) {
         presenter.addToArchive(user.getId(),contact);
+        presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        initList();
+    }
+
+    private void initRefresh(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                refreshItems();
+            }
+        });
+
+
+    }
+    void refreshItems() {
+        initList();
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

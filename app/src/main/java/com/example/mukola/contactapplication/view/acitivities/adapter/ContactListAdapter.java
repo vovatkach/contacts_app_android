@@ -62,11 +62,19 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     }
 
-    private void initListeners(ViewHolder viewHolder,final int position){
+    private void initListeners(final ViewHolder viewHolder, final int position){
         viewHolder.fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 onClick.onFavClick(itemsData.get(position));
+                if (itemsData.get(position).isFavorite()){
+                    viewHolder.fav.setImageResource(R.drawable.ic_star_border_black_24dp);
+                    itemsData.get(position).setFavorite(false);
+                }else {
+                    viewHolder.fav.setImageResource(R.drawable.ic_star_black_24dp);
+                    itemsData.get(position).setFavorite(true);
+                }
             }
         });
 

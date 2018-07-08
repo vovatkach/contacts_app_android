@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,6 +19,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +54,9 @@ public class MainScreenActivity extends AppCompatActivity
     @BindView(R.id.btn_import_ms)
     Button btn;
 
+    @BindView(R.id.swipeRefreshLayoutMain)
+    SwipeRefreshLayout swipeRefreshLayout;
+
     @OnClick(R.id.btn_import_ms)
     void onImportClick(View view) {
         presenter.openCleanUp();
@@ -81,7 +86,6 @@ public class MainScreenActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_m);
         setSupportActionBar(toolbar);
          fab = (FloatingActionButton) findViewById(R.id.fab);
-
          setOnFabListener();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -95,17 +99,14 @@ public class MainScreenActivity extends AppCompatActivity
 
         ButterKnife.bind(this);
 
-
-
         presenter = new MSPresenter(this,this,this);
 
         user = getData();
 
         initView();
+        initRefresh();
 
         presenter.getContacts(user.getId());
-
-
         Log.d("Logined users email - ", user.getEmail());
     }
 
@@ -223,6 +224,7 @@ public class MainScreenActivity extends AppCompatActivity
     @Override
     public void setContactList(List<Contact> contacts) {
 
+        onItemsLoadComplete();
         list.setVisibility(View.VISIBLE);
         btn.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
@@ -263,12 +265,37 @@ public class MainScreenActivity extends AppCompatActivity
 
     @Override
     public void onFavClick(@NonNull Contact contact) {
-
+        if (contact.isFavorite()){
+            presenter.deleteFRomFavorite(user.getId(),contact);
+        }else {
+            presenter.addToFavorite(user.getId(),contact);
+        }
     }
 
     @Override
     public void onUserClick(@NonNull Contact contact) {
         presenter.openContact(contact,user.getId());
+    }
+
+    private void initRefresh(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                refreshItems();
+            }
+        });
+
+
+    }
+    void refreshItems() {
+        presenter.getContacts(user.getId());
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 }
 

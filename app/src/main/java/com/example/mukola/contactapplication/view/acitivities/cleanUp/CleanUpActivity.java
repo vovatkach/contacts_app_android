@@ -51,6 +51,11 @@ public class CleanUpActivity extends AppCompatActivity implements CleanUpContrac
         presenter.openArchive();
     }
 
+    @OnClick(R.id.clean_back)
+    void onBackClick(View view) {
+        onBackPressed();
+    }
+
     @BindView(R.id.progressBar_clean)
     ProgressBar progressBar;
 

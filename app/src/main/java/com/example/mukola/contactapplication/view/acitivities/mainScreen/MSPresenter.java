@@ -3,8 +3,14 @@ package com.example.mukola.contactapplication.view.acitivities.mainScreen;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepository;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.GetContactsRepositoryImpl;
 
@@ -16,11 +22,17 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     private MSContract.IMainScreenView view;
 
     @NonNull
-    Activity activity;
+    private Activity activity;
 
 
     @NonNull
-    GetContactsRepository getContactsRepository;
+    private GetContactsRepository getContactsRepository;
+
+    @NonNull
+    private AddToFavoritesRepository addToFavoritesRepository;
+
+    @NonNull
+    private DeleteFromFavoritesRepository deleteFromFavoritesRepository;
 
 
 
@@ -28,7 +40,8 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         this.view = view;
         this.activity = activity;
         getContactsRepository = new GetContactsRepositoryImpl(context);
-
+        addToFavoritesRepository = new AddToFavoritesRepositoryImpl(context);
+        deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
     }
 
     @Override
@@ -63,13 +76,13 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         getContactsRepository.getContacts(userId, new GetContactsRepository.GetContactsCallback() {
             @Override
             public void onContactsGet(@NonNull final ArrayList<Contact> list) {
-                activity.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
+                //activity.runOnUiThread(new Runnable() {
+//
+//                    @Override
+//                    public void run() {
                         view.setContactList(list);
-                    }
-                });
+//                    }
+//                });
 
             }
 
@@ -83,6 +96,36 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     @Override
     public void openFavorite() {
         view.openFavorite();
+    }
+
+    @Override
+    public void addToFavorite(@NonNull int userId, @NonNull Contact contact) {
+        addToFavoritesRepository.addToFavorites(userId, contact.getId(), new AddToFavoritesRepository.AddToFavoritesCallback() {
+            @Override
+            public void addedSuccessfull() {
+                view.showToast(activity.getString(R.string.add_to_favorite));
+            }
+
+            @Override
+            public void notSuccessfull() {
+                view.showToast(activity.getString(R.string.error));
+            }
+        });
+    }
+
+    @Override
+    public void deleteFRomFavorite(@NonNull int userId, @NonNull Contact contact) {
+        deleteFromFavoritesRepository.deleteFromFavorites(userId, contact.getId(), new DeleteFromFavoritesRepository.deleteFromFavoritesCallback() {
+            @Override
+            public void deletedSuccessfull() {
+                Log.d("MS DELETED","FROM FAVORITE");
+            }
+
+            @Override
+            public void notSuccessfull() {
+                Log.d("MS NOT DELETED","FROM FAVORITE");
+            }
+        });
     }
 
 }

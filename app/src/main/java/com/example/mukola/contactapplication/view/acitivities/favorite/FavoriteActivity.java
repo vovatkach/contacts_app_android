@@ -3,6 +3,7 @@ package com.example.mukola.contactapplication.view.acitivities.favorite;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,8 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     @BindView(R.id.tv_no_contact_af)
     TextView tv;
 
+    @BindView(R.id.swipeRefreshLayoutFav)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @OnClick(R.id.favorite_back)
     void onFavoriteClick(View view) {
@@ -53,8 +56,10 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
         presenter = new FavoritePresenter(this,this);
 
         getData();
+        initRefresh();
 
         presenter.getFavorites(user.getId());
+
 
     }
 
@@ -135,5 +140,26 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     public void setvNoFavoriteVisible() {
         list.setVisibility(View.GONE);
         tv.setVisibility(View.VISIBLE);
+    }
+
+    private void initRefresh(){
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                refreshItems();
+            }
+        });
+
+
+    }
+    void refreshItems() {
+        presenter.getFavorites(user.getId());
+        onItemsLoadComplete();
+    }
+
+    void onItemsLoadComplete() {
+
+        swipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -24,6 +24,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayoutAll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -56,6 +62,8 @@
                     android:visibility="invisible" />
 
             </RelativeLayout>
+            </android.support.v4.widget.SwipeRefreshLayout>
+
         </LinearLayout>
     </LinearLayout>
 

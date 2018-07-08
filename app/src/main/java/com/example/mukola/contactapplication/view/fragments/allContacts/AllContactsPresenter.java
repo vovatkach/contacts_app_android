@@ -3,11 +3,14 @@ package com.example.mukola.contactapplication.view.fragments.allContacts;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.repositories.AddToArchiveRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToArchiveRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRepository;
+import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetBlacklistRepository;
@@ -36,6 +39,9 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
     @NonNull
     private GetBlacklistRepository getBlacklistRepository;
 
+    @NonNull
+    private AddToBlacklistRepository addToBlacklistRepository;
+
     public AllContactsPresenter (@NonNull AllContactsContract.IAllContactsView view, @NonNull Activity activity,
                                   @NonNull Context context){
         this.view = view;
@@ -43,6 +49,7 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
         addToContactsRepository = new AddToContactsRepositoryImpl(context);
         addToArchiveRepository = new AddToArchiveRepositoryImpl(context);
         getBlacklistRepository = new GetBlacklistRepositoryImpl(context);
+        addToBlacklistRepository = new AddToBlacklistRepositoryImpl(context);
     }
 
 
@@ -74,6 +81,20 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
         });
     }
 
+    @Override
+    public void addToBlackList(@NonNull int userId, @NonNull String contactId) {
+        addToBlacklistRepository.addToBlacklist(userId, contactId, new AddToBlacklistRepository.AddToBlacklistCallback() {
+            @Override
+            public void addedSuccessfull() {
+                Log.d("LIST CON","add to blacklist");
+            }
+
+            @Override
+            public void notSuccessfull() {
+                Log.d("LIST CON","not add to blacklist");
+            }
+        });
+    }
 
     @Override
     public void addToContact(@NonNull int userId,@NonNull Contact contact){

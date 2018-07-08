@@ -47,7 +47,9 @@ public interface MSContract {
 
         void openFavorite();
 
+        void addToFavorite(@NonNull int userId,@NonNull Contact contact);
 
+        void deleteFRomFavorite(@NonNull int userId,@NonNull Contact contact);
 
     }
 }

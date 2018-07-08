@@ -39,56 +39,63 @@
         </android.support.v7.widget.Toolbar>
 
 
-
-        <RelativeLayout
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayoutA"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.6"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv_contacts_is"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:divider="#00000000"
-                android:dividerHeight="10dp"
-                android:padding="5dp"
-                android:visibility="invisible"
-                app:layoutManager="LinearLayoutManager" />
+                android:layout_weight="1.6"
+                android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBar_is"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center"
-                android:layout_marginTop="259dp"
-                android:padding="10dp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/rv_contacts_ms"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_contacts_is"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:divider="#00000000"
+                    android:dividerHeight="10dp"
+                    android:padding="5dp"
+                    android:visibility="invisible"
+                    app:layoutManager="LinearLayoutManager" />
 
-            <TextView
-                android:id="@+id/tv_no_contact_is"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="306dp"
-                android:text="@string/no_contact"
-                android:textAlignment="center"
-                android:textColor="@color/colorText"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="invisible" />
+                <ProgressBar
+                    android:id="@+id/progressBar_is"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="259dp"
+                    android:padding="10dp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/rv_contacts_ms"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.498"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/tv_no_contact_is"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="306dp"
+                    android:text="@string/no_contact"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorText"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
     </LinearLayout>
 
 </android.support.v7.widget.LinearLayoutCompat>
