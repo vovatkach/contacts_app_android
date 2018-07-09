@@ -34,6 +34,8 @@ import com.google.api.services.people.v1.model.Person;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -286,6 +288,15 @@ public class CleanUpPresenter implements CleanUpContract.ICleanUpPresenter {
                     finalContactList.add(personToContact(p));
                 }
                 view.setProgressBarGone();
+
+                Collections.sort(finalContactList, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact contact2, Contact contact1)
+                    {
+
+                        return  contact2.getName().compareTo(contact1.getName());
+                    }
+                });
 
                 view.setContactList(finalContactList);
             }

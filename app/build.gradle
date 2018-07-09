@@ -54,8 +54,9 @@ dependencies {
     implementation 'com.google.gms:google-services:4.0.1'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-plus:8.4.0'
-    implementation 'com.google.android.gms:play-services-auth:8.4.0'
     implementation 'com.google.api-client:google-api-client:1.21.0'
+    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
     //  People API
     implementation 'com.google.apis:google-api-services-people:v1-rev2-1.21.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'

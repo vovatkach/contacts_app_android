@@ -118,6 +118,7 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
         presenter.onContactClicked(contact);
     }
 
+
     @Override
     public void onContactClicked(@NonNull Contact contact) {
         presenter.openContact(contact,user.getId());

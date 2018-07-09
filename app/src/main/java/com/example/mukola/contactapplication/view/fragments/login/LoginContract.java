@@ -12,7 +12,7 @@ public interface LoginContract {
         void showToast(@NonNull String message);
         void signUpTvPressed();
         void openMainScreen(@NonNull User user);
-        void signIn();
+
     }
 
     public interface IRegisterPresenter{
@@ -20,8 +20,7 @@ public interface LoginContract {
         void signInButtonPressed(@NonNull String email,@NonNull String password);
         void detachView();
         void login(@NonNull String email,@NonNull final String password);
-        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
-        GoogleSignInClient getGoogleSignInClient();
-        void signIn();
+        void firebaseAuthWithGoogleR(GoogleSignInAccount account);
+        boolean isOnline();
     }
 }

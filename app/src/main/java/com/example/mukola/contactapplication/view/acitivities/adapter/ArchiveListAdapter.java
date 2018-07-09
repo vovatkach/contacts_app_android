@@ -27,6 +27,9 @@ public class ArchiveListAdapter extends RecyclerView.Adapter<ArchiveListAdapter.
 
     private PhotoSaver photoSaver;
 
+    private char p;
+
+
     public interface OnItemClicked {
         void onFavClick(@NonNull Contact contact);
         void onKeepClick(@NonNull Contact contact);
@@ -94,6 +97,17 @@ public class ArchiveListAdapter extends RecyclerView.Adapter<ArchiveListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
+        if (position==0){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(0).getName().charAt(0)));
+            p = itemsData.get(0).getName().charAt(0);
+        }
+
+        if (itemsData.get(position).getName().charAt(0) != p){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(position).getName().charAt(0)));
+            p = itemsData.get(position).getName().charAt(0);
+        }
+
+
         viewHolder.name.setText(itemsData.get(position).getName());
 
         viewHolder.phone.setText(itemsData.get(position).getNumber());
@@ -118,6 +132,8 @@ public class ArchiveListAdapter extends RecyclerView.Adapter<ArchiveListAdapter.
 
         public TextView email;
 
+        public TextView alp;
+
         CircleImageView photo;
 
         ImageView fav;
@@ -139,6 +155,9 @@ public class ArchiveListAdapter extends RecyclerView.Adapter<ArchiveListAdapter.
             fav = (ImageView) itemLayoutView.findViewById(R.id.img_vip_ai);
 
             keep = (ImageView) itemLayoutView.findViewById(R.id.img_keep_ai);
+
+            alp = (TextView) itemLayoutView.findViewById(R.id.alph);
+
 
         }
     }

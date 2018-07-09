@@ -15,6 +15,8 @@ import com.example.mukola.contactapplication.model.repositories.GetContactsRepos
 import com.example.mukola.contactapplication.model.repositories.GetContactsRepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MSPresenter implements MSContract.IMainScreenPresenter{
 
@@ -76,14 +78,17 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         getContactsRepository.getContacts(userId, new GetContactsRepository.GetContactsCallback() {
             @Override
             public void onContactsGet(@NonNull final ArrayList<Contact> list) {
-                //activity.runOnUiThread(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-                        view.setContactList(list);
-//                    }
-//                });
 
+                Collections.sort(list, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact contact2, Contact contact1)
+                    {
+
+                        return  contact2.getName().compareTo(contact1.getName());
+                    }
+                });
+
+                view.setContactList(list);
             }
 
             @Override

@@ -46,6 +46,7 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     @BindView(R.id.rv_city_contact)
     RecyclerView list;
 
+
     @BindView(R.id.spinner_cities)
     Spinner cities;
 
@@ -54,6 +55,8 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
 
     @BindView(R.id.tv_city_no_contacts)
     TextView tv;
+
+
 
     @BindView(R.id.progressBar_city)
     ProgressBar progressBar;
@@ -267,4 +270,6 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     public void onUserClick(@NonNull Contact contact) {
         presenter.onContactClicked(contact);
     }
+
+
 }

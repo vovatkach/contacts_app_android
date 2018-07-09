@@ -54,6 +54,8 @@ public class MainScreenActivity extends AppCompatActivity
     @BindView(R.id.btn_import_ms)
     Button btn;
 
+
+
     @BindView(R.id.swipeRefreshLayoutMain)
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -276,6 +278,7 @@ public class MainScreenActivity extends AppCompatActivity
     public void onUserClick(@NonNull Contact contact) {
         presenter.openContact(contact,user.getId());
     }
+
 
     private void initRefresh(){
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

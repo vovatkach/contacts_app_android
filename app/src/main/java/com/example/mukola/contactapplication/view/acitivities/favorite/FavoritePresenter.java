@@ -8,6 +8,8 @@ import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepo
 import com.example.mukola.contactapplication.model.repositories.GetFavoritesRepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class FavoritePresenter implements FavoritContract.IFavoritePresenter{
 
@@ -39,6 +41,14 @@ public class FavoritePresenter implements FavoritContract.IFavoritePresenter{
         getFavoritesRepository.getFavorites(userId, new GetFavoritesRepository.GetFavoritesCallback() {
             @Override
             public void onFavoritesGet(@NonNull final ArrayList<Contact> list) {
+                Collections.sort(list, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact contact2, Contact contact1)
+                    {
+
+                        return  contact2.getName().compareTo(contact1.getName());
+                    }
+                });
                 view.setContactList(list);
             }
 

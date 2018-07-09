@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
@@ -17,6 +18,7 @@ import com.mindorks.placeholderview.SwipePlaceHolderView;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -46,6 +48,9 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
     private ArrayList<String> mBlacklist;
 
 
+    @BindView(R.id.tinder_no)
+    TextView tv;
+
     public TinderFragment() {
         // Required empty public constructor
     }
@@ -69,15 +74,13 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
         presenter = new TinderPresenter(this,getContext());
 
-
-            if(((CleanUpActivity) getActivity()).getContacts()==null){
+        if(((CleanUpActivity) getActivity()).getContacts().isEmpty()){
+                tv.setVisibility(View.VISIBLE);
+                tv.setText(getString(R.string.no_contact));
                 showToast(getString(R.string.no_contact));
             }else {
                 presenter.initTab(view);
             }
-
-
-
 
         return view;
     }

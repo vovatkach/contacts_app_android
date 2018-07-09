@@ -114,7 +114,7 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     private void initList(){
         presenter.getBlacklist(user.getId());
-        if(((CleanUpActivity) getActivity()).getContacts()==null){
+        if(((CleanUpActivity) getActivity()).getContacts().isEmpty()){
             setImportButtonVisible();
         }else {
             setContactList(((CleanUpActivity) getActivity()).getContacts());

@@ -15,6 +15,8 @@ import com.example.mukola.contactapplication.model.repositories.GetArchiveReposi
 import com.example.mukola.contactapplication.model.repositories.GetArchiveRepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ArchivePresenter implements ArchiveContract.IImportPresenter {
 
@@ -59,6 +61,14 @@ public class ArchivePresenter implements ArchiveContract.IImportPresenter {
         getArchiveRepository.getArchive(userId, new GetArchiveRepository.GetArchiveCallback() {
             @Override
             public void onArchiveGet(@NonNull ArrayList<Contact> list) {
+                Collections.sort(list, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact contact2, Contact contact1)
+                    {
+
+                        return  contact2.getName().compareTo(contact1.getName());
+                    }
+                });
                 view.setContactList(list);
             }
 

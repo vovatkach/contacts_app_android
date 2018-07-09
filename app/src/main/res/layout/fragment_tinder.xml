@@ -10,6 +10,15 @@
     android:background="@color/colorWhite"
     tools:context=".view.fragments.tinder.TinderFragment">
 
+    <TextView
+        android:id="@+id/tinder_no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="TextView"
+        android:textColor="@color/colorText"
+        android:visibility="gone"/>
+
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="80dp"

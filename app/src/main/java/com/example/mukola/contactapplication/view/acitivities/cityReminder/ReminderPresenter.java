@@ -32,6 +32,8 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +145,7 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
                         list1.add(s);
                     }
                 }
+
                 view.setSpinner(list1);
             }
 
@@ -276,6 +279,14 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
             @Override
             public void onContactsGet(@NonNull ArrayList<Contact> list) {
                 view.setProgressBarGone();
+                Collections.sort(list, new Comparator<Contact>() {
+                    @Override
+                    public int compare(Contact contact2, Contact contact1)
+                    {
+
+                        return  contact2.getName().compareTo(contact1.getName());
+                    }
+                });
                 view.setContactList(list);
             }
 

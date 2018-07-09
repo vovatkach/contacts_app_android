@@ -20,10 +20,6 @@ import java.util.ArrayList;
 
 public class AllContactsPresenter implements AllContactsContract.IAllContactsPresenter {
 
-    public static final int REQUEST_ID_CALL_PERMISSIONS = 1;
-
-    public static final int REQUEST_ID_SMS_PERMISSIONS = 2;
-
     @NonNull
     private AllContactsContract.IAllContactsView view;
 

@@ -29,6 +29,9 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private PhotoSaver photoSaver;
 
+    private char p;
+
+
     public interface OnItemClicked {
         void onFavClick(@NonNull Contact contact);
         void onUserClick(@NonNull Contact contact);
@@ -55,6 +58,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+
 
         initListeners(viewHolder,position);
 
@@ -97,6 +101,16 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
+        if (position==0){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(0).getName().charAt(0)));
+            p = itemsData.get(0).getName().charAt(0);
+        }
+
+        if (itemsData.get(position).getName().charAt(0) != p){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(position).getName().charAt(0)));
+            p = itemsData.get(position).getName().charAt(0);
+        }
+
         viewHolder.name.setText(itemsData.get(position).getName());
 
         viewHolder.phone.setText(itemsData.get(position).getNumber());
@@ -127,9 +141,10 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         public TextView email;
 
+        public TextView alp;
+
+
         CircleImageView photo;
-
-
 
         ImageView fav;
 
@@ -141,6 +156,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
             phone = (TextView) itemLayoutView.findViewById(R.id.tv_number_ci);
 
             email = (TextView) itemLayoutView.findViewById(R.id.tv_email_ci);
+
+            alp = (TextView) itemLayoutView.findViewById(R.id.alp);
 
             photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image);
 

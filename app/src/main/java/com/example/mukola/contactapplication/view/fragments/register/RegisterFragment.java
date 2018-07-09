@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
 import java.util.List;
@@ -27,13 +31,16 @@ import butterknife.Unbinder;
 
 public class RegisterFragment extends Fragment implements RegisterContract.IRegisterView{
 
-    private static final int RC_SIGN_IN = 1;
+    private static final int RC_SIGN_UP = 2 ;
 
     private OnRegisterFragmentInteractionListener mListener;
 
     private Unbinder unbinder;
 
     private RegisterContract.IRegisterPresenter presenter;
+
+    private GoogleSignInClient mGoogleSignInClient;
+
 
     @BindViews({R.id.et_full_name_register,R.id.et_contact_number_register,
     R.id.et_adress_register,R.id.et_email_register,R.id.et_password_register,
@@ -52,7 +59,7 @@ public class RegisterFragment extends Fragment implements RegisterContract.IRegi
 
     @OnClick(R.id.sign_in_button_register)
     void onSignUpGoogleClick(View view) {
-        presenter.signIn();
+        signUp();
     }
 
     public RegisterFragment() {
@@ -76,7 +83,22 @@ public class RegisterFragment extends Fragment implements RegisterContract.IRegi
 
         presenter = new RegisterPresenter(this,getContext(),getActivity());
 
+        initGSO();
+
         return view;
+    }
+
+    private void initGSO(){
+        if (presenter.isOnline()) {
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+
+            mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+        }else {
+            showToast("Bad internet connection!");
+        }
     }
 
     @Override
@@ -98,16 +120,29 @@ public class RegisterFragment extends Fragment implements RegisterContract.IRegi
         presenter.detachView();
     }
 
+    private void signUp() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_UP);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode==RC_SIGN_UP) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            presenter.handleSignInResult(task);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                 if (requestCode==RC_SIGN_UP){
+                    presenter.firebaseAuthWithGoogleR(account);
+                }
+
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w("TAG", "Google sign in failed", e);
+                // ...
+            }
         }
     }
 
@@ -123,11 +158,7 @@ public class RegisterFragment extends Fragment implements RegisterContract.IRegi
         mListener.openMainScreenFromRegisterFragment(user);
     }
 
-    @Override
-    public void signIn() {
-        Intent signInIntent = presenter.getGoogleSignInClient().getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+
 
     @Override
     public void showToast(@NonNull String message) {

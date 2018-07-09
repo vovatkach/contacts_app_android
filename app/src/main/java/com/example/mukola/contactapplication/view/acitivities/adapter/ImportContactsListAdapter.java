@@ -32,6 +32,9 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
     private PhotoSaver photoSaver;
 
+    private char p;
+
+
     public interface OnItemClicked {
         void onAddClick(@NonNull Contact contact);
         void onFavoriteClick(@NonNull Contact contact);
@@ -108,6 +111,16 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
+        if (position==0){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(0).getName().charAt(0)));
+            p = itemsData.get(0).getName().charAt(0);
+        }
+
+        if (itemsData.get(position).getName().charAt(0) != p){
+            viewHolder.alp.setText(String.valueOf(itemsData.get(position).getName().charAt(0)));
+            p = itemsData.get(position).getName().charAt(0);
+        }
+
         viewHolder.name.setText(itemsData.get(position).getName());
 
         viewHolder.number.setText(itemsData.get(position).getNumber());
@@ -132,6 +145,7 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
         public TextView email;
 
+        public TextView alp;
 
         CircleImageView photo;
 
@@ -158,6 +172,8 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
             archive = (ImageView) itemLayoutView.findViewById(R.id.img_archive_ici);
 
             fav = (ImageView) itemLayoutView.findViewById(R.id.img_vip_ici);
+
+            alp = (TextView) itemLayoutView.findViewById(R.id.alpha);
 
         }
     }

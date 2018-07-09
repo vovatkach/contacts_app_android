@@ -28,6 +28,8 @@
                 android:layout_weight="1.6"
                 android:orientation="vertical">
 
+
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_contacts_ms"
                     android:layout_width="match_parent"

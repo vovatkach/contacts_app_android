@@ -15,7 +15,6 @@ public interface RegisterContract {
         void showToast(@NonNull String message);
         void signInTvPressed();
         void openMainScreen(@NonNull User user);
-        void signIn();
     }
 
     public interface IRegisterPresenter{
@@ -23,9 +22,8 @@ public interface RegisterContract {
         void openSignIn();
         void detachView();
         void register(@NonNull final User user,String type);
-        void handleSignInResult(Task<GoogleSignInAccount> completedTask);
-        void signIn();
-        GoogleSignInClient getGoogleSignInClient();
+        void firebaseAuthWithGoogleR(GoogleSignInAccount account);
+        boolean isOnline();
 
     }
 }

@@ -9,6 +9,8 @@ import android.widget.EditText;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.GoogleSignInRepository;
+import com.example.mukola.contactapplication.model.repositories.GoogleSignInRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.RegisterRepository;
 import com.example.mukola.contactapplication.model.repositories.RegisterRepositoryImpl;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -40,6 +42,9 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     private GoogleSignInClient mGoogleSignInClient;
 
     @NonNull
+    private GoogleSignInRepository googleSignInRepository;
+
+    @NonNull
     private Activity activity;
 
 
@@ -50,31 +55,10 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
         this.activity = activity;
         registerRepository = new RegisterRepositoryImpl(context);
         getUserRepository = new GetUserRepositoryImpl(context);
-        initGoogleSign();
-        signOut();
+        googleSignInRepository = new GoogleSignInRepositoryImpl(activity);
+
     }
 
-    private void initGoogleSign(){
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-
-        if (isOnline()) {
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestEmail()
-                    .build();
-            // Build a GoogleSignInClient with the options specified by gso.
-            mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
-        }else {
-            view.showToast("Bad internet connection.");
-        }
-    }
-
-    private void checkIsSigned(){
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(context);
-        //updateUI(account);
-    }
 
     @Override
     public void register(@NonNull final User user, final String type) {
@@ -99,6 +83,15 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
         });
     }
 
+    @Override
+    public void firebaseAuthWithGoogleR(GoogleSignInAccount account) {
+        googleSignInRepository.signIn(account, new GoogleSignInRepository.SignInCallback() {
+            @Override
+            public void signIn(@NonNull User user) {
+                view.openMainScreen(user);
+            }
+        });
+    }
 
 
     private void registerUser(@NonNull User user){
@@ -124,38 +117,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
         });
     }
 
-    @Override
-    public void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            // Signed in successfully, show authenticated UI.
-            User user = new User();
-            user.setName(account.getDisplayName());
-            user.setEmail(account.getEmail());
-            user.setPassword(account.getId());
-            user.setNumber(account.getFamilyName());
-            user.setAddress(account.getGivenName());
-            register(user,"google");
-            Log.d("Google email",account.getEmail());
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-            view.showToast("Please, try again!");
-            //updateUI(null);
-        }
-    }
-
-    @Override
-    public void signIn() {
-        view.signIn();
-    }
-
-    @Override
-    public GoogleSignInClient getGoogleSignInClient() {
-        return mGoogleSignInClient;
-    }
 
     @Override
     public void createUser(@NonNull List<EditText> list){
@@ -215,7 +177,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
         }
     }
 
-    private boolean isOnline() {
+    public boolean isOnline() {
         Runtime runtime = Runtime.getRuntime();
         try {
             Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
@@ -229,13 +191,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     }
 
     private void signOut() {
-        mGoogleSignInClient.signOut()
-                .addOnCompleteListener(activity, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // ...
-                    }
-                });
+        googleSignInRepository.logOut();
     }
 
 
