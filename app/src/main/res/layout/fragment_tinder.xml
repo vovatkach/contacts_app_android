@@ -10,6 +10,14 @@
     android:background="@color/colorWhite"
     tools:context=".view.fragments.tinder.TinderFragment">
 
+    <ProgressBar
+        android:id="@+id/progressBar_tind"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/tinder_no"
         android:layout_width="wrap_content"
@@ -19,30 +27,45 @@
         android:textColor="@color/colorText"
         android:visibility="gone"/>
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_gravity="bottom"
             android:gravity="center"
             android:orientation="horizontal">
-            <ImageButton
-                android:id="@+id/rejectBtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@drawable/ic_cancel"/>
-            <ImageButton
-                android:id="@+id/acceptBtn"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="30dp"
-                android:background="@drawable/ic_accept"/>
-        </LinearLayout>
 
-    <com.mindorks.placeholderview.SwipePlaceHolderView
+        <ImageButton
+            android:id="@+id/rejectBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/ic_cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.343"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/acceptBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/ic_accept"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.687"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+    <com.mindorks.placeholderview.SwipeDirectionalView
         android:id="@+id/swipeView"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.mindorks.placeholderview.SwipePlaceHolderView>
+    </com.mindorks.placeholderview.SwipeDirectionalView>
     </FrameLayout>
 

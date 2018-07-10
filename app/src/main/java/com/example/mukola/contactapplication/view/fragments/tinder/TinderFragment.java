@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.view.acitivities.cleanUp.CleanUpActivity;
 import com.mindorks.placeholderview.SwipeDecor;
+import com.mindorks.placeholderview.SwipeDirectionalView;
 import com.mindorks.placeholderview.SwipePlaceHolderView;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
 
     @NonNull
-    private SwipePlaceHolderView mSwipeView;
+    private SwipeDirectionalView mSwipeView;
 
     @NonNull
     private Context mContext;
@@ -50,6 +52,9 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
     @BindView(R.id.tinder_no)
     TextView tv;
+
+    @BindView(R.id.progressBar_tind)
+    ProgressBar progressBar;
 
     public TinderFragment() {
         // Required empty public constructor
@@ -77,8 +82,8 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
         if(((CleanUpActivity) getActivity()).getContacts().isEmpty()){
                 tv.setVisibility(View.VISIBLE);
                 tv.setText(getString(R.string.no_contact));
-                showToast(getString(R.string.no_contact));
             }else {
+                tv.setVisibility(View.GONE);
                 presenter.initTab(view);
             }
 
@@ -97,6 +102,7 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
         }
     }
 
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -112,8 +118,8 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
     }
 
     @Override
-    public void initTab(View view) {
-        mSwipeView = (SwipePlaceHolderView) view.findViewById(R.id.swipeView);
+    public void initTab(final View view) {
+        mSwipeView = (SwipeDirectionalView) view.findViewById(R.id.swipeView);
 
         mContext = getActivity().getApplicationContext();
 
@@ -125,10 +131,12 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                         .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
 
-        presenter.getBlackList(userId);
+
 
 
         for(Contact person : ((CleanUpActivity) getActivity()).getContacts()){
+
+            presenter.getBlackList(userId);
 
             boolean indicator = false;
 
@@ -158,6 +166,7 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                 mSwipeView.doSwipe(true);
             }
         });
+
     }
 
     @Override

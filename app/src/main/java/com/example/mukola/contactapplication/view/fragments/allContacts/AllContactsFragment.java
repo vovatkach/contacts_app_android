@@ -9,9 +9,11 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +64,9 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     private ArrayList<Contact> mSectionList;
 
+    private ArrayList<Contact> conteiner;
+
+
 
     public AllContactsFragment() {
         // Required empty public constructor
@@ -84,6 +89,8 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         unbinder = ButterKnife.bind(this,view);
 
         presenter = new AllContactsPresenter(this,getActivity(),getContext());
+
+        conteiner = new ArrayList<>();
 
         mSectionList = new ArrayList<>();
 
@@ -133,21 +140,29 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     @Override
     public void setContactList(ArrayList<Contact> contacts) {
 
-        ArrayList<Contact> l;
-
-        if (blacklist!=null) {
-            for (int i = 0; i<contacts.size();i++) {
-                for (String s : blacklist) {
-                    if (contacts.get(i).getBlacklistId().equals(s)) {
-                        contacts.remove(i);
+            if (blacklist!=null) {
+                conteiner.clear();
+                for (Contact c : contacts) {
+                    boolean b = false;
+                    for (String s : blacklist) {
+                        if (c.getBlacklistId().equals(s)) {
+                            b = true;
+                        }
+                    }
+                    if (!b){
+                        conteiner.add(c);
                     }
                 }
+                mSectionList.clear();
+
+                presenter.getHeaderListLatter(conteiner,mSectionList);
+
+            }else{
+
+                mSectionList.clear();
+
+                presenter.getHeaderListLatter(contacts,mSectionList);
             }
-        }
-
-        mSectionList.clear();
-
-        presenter.getHeaderListLatter(contacts,mSectionList);
 
 
         list.setVisibility(View.VISIBLE);

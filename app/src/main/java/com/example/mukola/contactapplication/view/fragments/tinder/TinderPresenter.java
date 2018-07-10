@@ -11,6 +11,8 @@ import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRe
 import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetBlacklistRepository;
 import com.example.mukola.contactapplication.model.repositories.GetBlacklistRepositoryImpl;
 
@@ -32,6 +34,7 @@ public class TinderPresenter implements TinderContract.ITinderPresenter {
 
     @NonNull
     private GetBlacklistRepository getBlacklistRepository;
+
 
     @NonNull
     private PhotoSaver photoSaver;
