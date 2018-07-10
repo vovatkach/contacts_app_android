@@ -15,6 +15,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,8 @@ import com.example.mukola.contactapplication.view.acitivities.contact.ContactAct
 import com.example.mukola.contactapplication.view.acitivities.favorite.FavoriteActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,8 +56,6 @@ public class MainScreenActivity extends AppCompatActivity
 
     @BindView(R.id.btn_import_ms)
     Button btn;
-
-
 
     @BindView(R.id.swipeRefreshLayoutMain)
     SwipeRefreshLayout swipeRefreshLayout;
@@ -81,6 +82,9 @@ public class MainScreenActivity extends AppCompatActivity
     @NonNull
     private  TextView  tv_email_drawer;
 
+    private ArrayList<Contact> mSectionList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +106,8 @@ public class MainScreenActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         presenter = new MSPresenter(this,this,this);
+
+        mSectionList = new ArrayList<>();
 
         user = getData();
 
@@ -183,8 +189,6 @@ public class MainScreenActivity extends AppCompatActivity
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
     }
 
-
-
     @Override
     public void openContact(@NonNull Contact contact, int userId) {
         Intent intent = new Intent(this, ContactActivity.class);
@@ -224,21 +228,22 @@ public class MainScreenActivity extends AppCompatActivity
     }
 
     @Override
-    public void setContactList(List<Contact> contacts) {
+    public void setContactList(ArrayList<Contact> contacts) {
 
         onItemsLoadComplete();
         list.setVisibility(View.VISIBLE);
         btn.setVisibility(View.GONE);
         tv.setVisibility(View.GONE);
-        list.setLayoutManager(new LinearLayoutManager(this));
+
+        mSectionList.clear();
+
+        presenter.getHeaderListLatter(contacts,mSectionList);
 
         LinearLayoutManager lm = new LinearLayoutManager(this);
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(lm);
 
-        ArrayList<Contact> l = new ArrayList<>(contacts);
-
-        ContactListAdapter mAdapter = new ContactListAdapter(l, this);
+        ContactListAdapter mAdapter = new ContactListAdapter(mSectionList, this);
         // set adapter
         mAdapter.setOnClick(this);
 

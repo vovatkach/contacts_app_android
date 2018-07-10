@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import com.example.mukola.contactapplication.view.acitivities.adapter.ImportCont
 import com.example.mukola.contactapplication.view.acitivities.cleanUp.CleanUpActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,13 +58,19 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     private ArrayList<String> blacklist;
 
+    private  ArrayList<Contact> contacts;
+
+    private ArrayList<Contact> mSectionList;
+
+
     public AllContactsFragment() {
         // Required empty public constructor
     }
 
-    public static AllContactsFragment newInstance(@NonNull User user) {
+    public static AllContactsFragment newInstance(@NonNull User user, List<Contact> contacts) {
         AllContactsFragment fragment = new AllContactsFragment();
         fragment.setUser(user);
+        fragment.setContacts(contacts);
         return fragment;
     }
 
@@ -76,8 +85,11 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
         presenter = new AllContactsPresenter(this,getActivity(),getContext());
 
-        initRefresh();
+        mSectionList = new ArrayList<>();
+
         initList();
+
+        initRefresh();
 
         return view;
     }
@@ -96,11 +108,7 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     @Override
     public void onResume() {
         super.onResume();
-        if(((CleanUpActivity) getActivity()).getContacts()==null){
-            setImportButtonVisible();
-        }else {
-            setContactList(((CleanUpActivity) getActivity()).getContacts());
-        }
+        initList();
     }
 
     @Override
@@ -114,52 +122,50 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     private void initList(){
         presenter.getBlacklist(user.getId());
-        if(((CleanUpActivity) getActivity()).getContacts().isEmpty()){
+        if(contacts.isEmpty()){
             setImportButtonVisible();
         }else {
-            setContactList(((CleanUpActivity) getActivity()).getContacts());
+            setContactList(contacts);
         }
     }
 
 
     @Override
-    public void setContactList(List<Contact> contacts) {
+    public void setContactList(ArrayList<Contact> contacts) {
 
-        ArrayList<Contact> l = new ArrayList<>();
+        ArrayList<Contact> l;
 
         if (blacklist!=null) {
-            for (Contact c : contacts) {
-                boolean b = false;
+            for (int i = 0; i<contacts.size();i++) {
                 for (String s : blacklist) {
-                    if (c.getBlacklistId().equals(s)) {
-                        b = true;
+                    if (contacts.get(i).getBlacklistId().equals(s)) {
+                        contacts.remove(i);
                     }
-                }
-
-                if (!b) {
-                    l.add(c);
                 }
             }
         }
 
-            list.setVisibility(View.VISIBLE);
-            tv.setVisibility(View.GONE);
-            list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mSectionList.clear();
 
-            LinearLayoutManager lm = new LinearLayoutManager(getActivity());
-            lm.setOrientation(LinearLayoutManager.VERTICAL);
-            list.setLayoutManager(lm);
+        presenter.getHeaderListLatter(contacts,mSectionList);
 
 
+        list.setVisibility(View.VISIBLE);
+        tv.setVisibility(View.GONE);
+        list.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-            ImportContactsListAdapter mAdapter = new ImportContactsListAdapter(l, getActivity(),getContext());
-            // set adapter
-            mAdapter.setOnClick(this);
+        LinearLayoutManager lm = new LinearLayoutManager(getActivity());
+        lm.setOrientation(LinearLayoutManager.VERTICAL);
+        list.setLayoutManager(lm);
 
-            list.setAdapter(mAdapter);
+        ImportContactsListAdapter mAdapter = new ImportContactsListAdapter(mSectionList,getContext());
+        // set adapter
+        mAdapter.setOnClick(this);
 
-            // set item animator to DefaultAnimator
-            list.setItemAnimator(new DefaultItemAnimator());
+        list.setAdapter(mAdapter);
+
+        // set item animator to DefaultAnimator
+        list.setItemAnimator(new DefaultItemAnimator());
     }
 
 
@@ -235,6 +241,10 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     void onItemsLoadComplete() {
 
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    public void setContacts( List<Contact> contacts){
+        this.contacts = new ArrayList<>(contacts);
     }
 
     @Override

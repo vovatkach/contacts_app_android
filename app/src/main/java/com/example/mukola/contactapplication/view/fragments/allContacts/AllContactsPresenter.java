@@ -3,6 +3,7 @@ package com.example.mukola.contactapplication.view.fragments.allContacts;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.mukola.contactapplication.R;
@@ -17,6 +18,8 @@ import com.example.mukola.contactapplication.model.repositories.GetBlacklistRepo
 import com.example.mukola.contactapplication.model.repositories.GetBlacklistRepositoryImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AllContactsPresenter implements AllContactsContract.IAllContactsPresenter {
 
@@ -122,7 +125,35 @@ public class AllContactsPresenter implements AllContactsContract.IAllContactsPre
         });
     }
 
+    @Override
+    public void getHeaderListLatter(ArrayList<Contact> usersList,ArrayList<Contact> mSectionList) {
 
+        Collections.sort(usersList, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact user1, Contact user2) {
+                return String.valueOf(user1.getName().charAt(0)).toUpperCase()
+                        .compareTo(String.valueOf(user2.getName().charAt(0)).toUpperCase());
+            }
+        });
+
+        String lastHeader = "";
+
+        int size = usersList.size();
+
+        for (int i = 0; i < size; i++) {
+
+            Contact user = usersList.get(i);
+            String header = String.valueOf(user.getName().charAt(0)).toUpperCase();
+
+            if (!TextUtils.equals(lastHeader, header)) {
+                lastHeader = header;
+
+                mSectionList.add(new Contact(header,true));
+            }
+
+            mSectionList.add(user);
+        }
+    }
 
 
 }

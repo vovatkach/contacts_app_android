@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AllContactsContract {
      interface IAllContactsView{
-        void  setContactList(List<Contact> contacts);
+        void  setContactList(ArrayList<Contact> contacts);
 
         void showToast(@NonNull String message);
 
@@ -35,5 +35,7 @@ public interface AllContactsContract {
 
          void addToBlackList(@NonNull int userId,@NonNull String contactId);
 
-    }
+         void getHeaderListLatter(@NonNull ArrayList<Contact> usersList, ArrayList<Contact> mSectionList);
+
+     }
 }

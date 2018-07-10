@@ -51,9 +51,11 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
     @NonNull
     private ArchiveContract.IImportPresenter presenter;
 
-
     @NonNull
     private User user;
+
+    private ArrayList<Contact> mSectionList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,8 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
         ButterKnife.bind(this);
 
         presenter = new ArchivePresenter(this,this,this);
+
+        mSectionList = new ArrayList<>();
 
         getData();
         initRefresh();
@@ -86,7 +90,7 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
     }
 
     @Override
-    public void setContactList(List<Contact> contacts) {
+    public void setContactList(ArrayList<Contact> contacts) {
 
         if (contacts.size() == 0) {
 
@@ -94,6 +98,10 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
            tv.setVisibility(View.VISIBLE);
 
         } else {
+            mSectionList.clear();
+
+            presenter.getHeaderListLatter(contacts,mSectionList);
+
             list.setVisibility(View.VISIBLE);
             list.setLayoutManager(new LinearLayoutManager(this));
 
@@ -101,9 +109,8 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
             lm.setOrientation(LinearLayoutManager.VERTICAL);
             list.setLayoutManager(lm);
 
-            ArrayList<Contact> l = new ArrayList<>(contacts);
 
-            ArchiveListAdapter mAdapter = new ArchiveListAdapter(l, this);
+            ArchiveListAdapter mAdapter = new ArchiveListAdapter(mSectionList, this);
             // set adapter
             mAdapter.setOnClick(this);
             list.setAdapter(mAdapter);

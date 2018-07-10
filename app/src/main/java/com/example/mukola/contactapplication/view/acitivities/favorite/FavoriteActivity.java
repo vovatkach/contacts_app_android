@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,8 @@ import com.example.mukola.contactapplication.view.acitivities.adapter.ContactLis
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -47,6 +50,9 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     @NonNull
     private FavoritContract.IFavoritePresenter presenter;
 
+    private ArrayList<Contact> mSectionList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +61,13 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
 
         presenter = new FavoritePresenter(this,this);
 
+        mSectionList = new ArrayList<>();
+
         getData();
+
         initRefresh();
 
         presenter.getFavorites(user.getId());
-
 
     }
 
@@ -76,7 +84,11 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     }
 
     @Override
-    public void setContactList(List<Contact> contacts) {
+    public void setContactList(ArrayList<Contact> contacts) {
+
+        mSectionList.clear();
+
+        presenter.getHeaderListLatter(contacts,mSectionList);
 
         list.setVisibility(View.VISIBLE);
         tv.setVisibility(View.GONE);
@@ -87,9 +99,8 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(lm);
 
-        ArrayList<Contact> l = new ArrayList<>(contacts);
 
-        ContactListAdapter mAdapter = new ContactListAdapter(l, this);
+        ContactListAdapter mAdapter = new ContactListAdapter(mSectionList, this);
         // set adapter
         mAdapter.setOnClick(this);
 
@@ -106,11 +117,14 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
         }
     }
 
-
-
     @Override
     public void onFavClick(@NonNull Contact contact) {
-
+        if (contact.isFavorite()){
+            presenter.deleteFRomFavorite(user.getId(),contact);
+            refreshItems();
+        }else {
+            presenter.addToFavorite(user.getId(),contact);
+        }
     }
 
     @Override
@@ -151,16 +165,14 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
                 refreshItems();
             }
         });
-
-
     }
+
     void refreshItems() {
         presenter.getFavorites(user.getId());
         onItemsLoadComplete();
     }
 
     void onItemsLoadComplete() {
-
         swipeRefreshLayout.setRefreshing(false);
     }
 }

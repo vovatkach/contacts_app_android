@@ -14,7 +14,7 @@ public interface ReminderContract {
 
         void showAlert();
 
-        void setContactList(@NonNull List<Contact> contacts);
+        void setContactList(@NonNull ArrayList<Contact> contacts);
 
         void setCity(@NonNull String city);
 
@@ -53,6 +53,11 @@ public interface ReminderContract {
 
         boolean checkAndRequestPermissions(int permissionCode);
 
+        void addToFavorite(@NonNull int userId,@NonNull Contact contact);
+
+        void deleteFRomFavorite(@NonNull int userId,@NonNull Contact contact);
+
+        void getHeaderListLatter(@NonNull ArrayList<Contact> usersList, ArrayList<Contact> mSectionList);
 
     }
 }

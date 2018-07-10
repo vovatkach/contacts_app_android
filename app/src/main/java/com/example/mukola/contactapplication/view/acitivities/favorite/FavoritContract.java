@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface FavoritContract {
@@ -11,7 +12,7 @@ public interface FavoritContract {
 
         void onContactClicked(@NonNull Contact contact);
 
-        void setContactList(List<Contact> contacts);
+        void setContactList(ArrayList<Contact> contacts);
 
         void showToast(@NonNull String message);
 
@@ -30,5 +31,11 @@ public interface FavoritContract {
         void getFavorites(@NonNull int userId);
 
         void openContact(@NonNull Contact contact, int userId);
+
+        void addToFavorite(@NonNull int userId,@NonNull Contact contact);
+
+        void deleteFRomFavorite(@NonNull int userId,@NonNull Contact contact);
+
+        void getHeaderListLatter(@NonNull ArrayList<Contact> usersList, ArrayList<Contact> mSectionList);
     }
 }

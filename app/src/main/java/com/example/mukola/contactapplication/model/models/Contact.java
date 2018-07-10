@@ -22,6 +22,8 @@ public class Contact implements Serializable {
 
     private String blacklistId;
 
+    private boolean isSectioned;
+
     public Contact(int id, String name, String number, String email,
                    String address, String company, String photoUrl,String blacklistId){
         this.id = id;
@@ -32,6 +34,17 @@ public class Contact implements Serializable {
         this.company = company;
         this.photoUrl = photoUrl;
         this.blacklistId = blacklistId;
+    }
+
+    public Contact(String name,boolean isSectioned){
+        this.name = name;
+        this.isSectioned = isSectioned;
+        this.number = "";
+        this.email = "";
+        this.address = "";
+        this.company = "";
+        this.photoUrl = "";
+        this.blacklistId = "";
     }
 
     public Contact(){}
@@ -106,5 +119,13 @@ public class Contact implements Serializable {
 
     public void setBlacklistId(String blacklistId) {
         this.blacklistId = blacklistId;
+    }
+
+    public boolean isSectioned() {
+        return isSectioned;
+    }
+
+    public void setSectioned(boolean sectioned) {
+        isSectioned = sectioned;
     }
 }

@@ -15,11 +15,12 @@ import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.ViewHolder> {
+public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<Contact> itemsData;
 
@@ -29,7 +30,11 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private PhotoSaver photoSaver;
 
-    private char p;
+    public static final int SECTION_VIEW = 0;
+
+    public static final int CONTENT_VIEW = 1;
+
+    WeakReference<Context> mContextWeakReference;
 
 
     public interface OnItemClicked {
@@ -41,30 +46,55 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
         this.itemsData = itemsData;
         this.context = context;
         photoSaver = new PhotoSaver(context);
+        this.mContextWeakReference = new WeakReference<Context>(context);
     }
 
     @Override
-    public ContactListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                              int viewType) {
         // create a new view
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.contact_item, parent,false);
 
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        Context context = mContextWeakReference.get();
+        if (viewType == SECTION_VIEW) {
+            Log.d("SECTION","YES");
+            return new ContactListAdapter.SectionHeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_header, parent, false));
+        }
+        return new ContactListAdapter.ViewHolder(itemLayoutView);
 
-        return viewHolder;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Context context = mContextWeakReference.get();
+        if (context == null) {
+            return;
+        }
+        if (SECTION_VIEW == getItemViewType(position)) {
 
+            SectionHeaderViewHolder sectionHeaderViewHolder = (SectionHeaderViewHolder) holder;
+            Contact sectionItem = itemsData.get(position);
+            sectionHeaderViewHolder.headerTitleTextview.setText(sectionItem.getName());
+            return;
+        }
+
+        ContactListAdapter.ViewHolder viewHolder = (ContactListAdapter.ViewHolder) holder;
 
         initListeners(viewHolder,position);
-
         initListItem(viewHolder,position);
 
     }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (itemsData.get(position).isSectioned()) {
+            return SECTION_VIEW;
+        } else {
+            return CONTENT_VIEW;
+        }
+    }
+
 
     private void initListeners(final ViewHolder viewHolder, final int position){
         viewHolder.fav.setOnClickListener(new View.OnClickListener() {
@@ -101,15 +131,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
-        if (position==0){
-            viewHolder.alp.setText(String.valueOf(itemsData.get(0).getName().charAt(0)));
-            p = itemsData.get(0).getName().charAt(0);
-        }
 
-        if (itemsData.get(position).getName().charAt(0) != p){
-            viewHolder.alp.setText(String.valueOf(itemsData.get(position).getName().charAt(0)));
-            p = itemsData.get(position).getName().charAt(0);
-        }
 
         viewHolder.name.setText(itemsData.get(position).getName());
 
@@ -141,9 +163,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
 
         public TextView email;
 
-        public TextView alp;
-
-
         CircleImageView photo;
 
         ImageView fav;
@@ -156,8 +175,6 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
             phone = (TextView) itemLayoutView.findViewById(R.id.tv_number_ci);
 
             email = (TextView) itemLayoutView.findViewById(R.id.tv_email_ci);
-
-            alp = (TextView) itemLayoutView.findViewById(R.id.alp);
 
             photo = (CircleImageView) itemLayoutView.findViewById(R.id.profile_image);
 
@@ -176,6 +193,17 @@ public class ContactListAdapter extends RecyclerView.Adapter<ContactListAdapter.
     {
         this.onClick=onClick;
     }
+
+
+    public class SectionHeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView headerTitleTextview;
+
+        public SectionHeaderViewHolder(View itemView) {
+            super(itemView);
+            headerTitleTextview = (TextView) itemView.findViewById(R.id.headerTitleTextview);
+        }
+    }
+
 
     public void removeItem(int position) {
         itemsData.remove(position);

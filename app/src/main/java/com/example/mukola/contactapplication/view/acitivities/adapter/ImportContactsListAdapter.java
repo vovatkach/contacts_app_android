@@ -16,24 +16,24 @@ import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContactsListAdapter.ViewHolder> {
+public class ImportContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private ArrayList<Contact> itemsData;
 
     private OnItemClicked onClick;
 
-    private Activity activity;
+    public static final int SECTION_VIEW = 0;
 
-    private Context context;
+    public static final int CONTENT_VIEW = 1;
+
+    WeakReference<Context> mContextWeakReference;
 
     private PhotoSaver photoSaver;
-
-    private char p;
-
 
     public interface OnItemClicked {
         void onAddClick(@NonNull Contact contact);
@@ -42,34 +42,63 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
         void onUserClick(@NonNull Contact contact);
     }
 
-    public ImportContactsListAdapter(ArrayList<Contact> itemsData, Activity activity, Context context) {
+    public ImportContactsListAdapter(ArrayList<Contact> itemsData,Context context) {
         this.itemsData = itemsData;
-        this.activity = activity;
         photoSaver = new PhotoSaver(context);
-        this.context = context;
+        this.mContextWeakReference = new WeakReference<Context>(context);
+
     }
 
     @Override
-    public ImportContactsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                            int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                      int viewType) {
         // create a new view
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.import_contact_item, parent,false);
 
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
+        Context context = mContextWeakReference.get();
+        if (viewType == SECTION_VIEW) {
+            Log.d("SECTION","YES");
+            return new SectionHeaderViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_header, parent, false));
+        }
+        return new ViewHolder(itemLayoutView);
 
-        return viewHolder;
+        }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (itemsData.get(position).isSectioned()) {
+            return SECTION_VIEW;
+        } else {
+            return CONTENT_VIEW;
+        }
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+
+
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Context context = mContextWeakReference.get();
+        if (context == null) {
+            return;
+        }
+        if (SECTION_VIEW == getItemViewType(position)) {
+
+            SectionHeaderViewHolder sectionHeaderViewHolder = (SectionHeaderViewHolder) holder;
+            Contact sectionItem = itemsData.get(position);
+            sectionHeaderViewHolder.headerTitleTextview.setText(sectionItem.getName());
+            return;
+        }
+
+        ViewHolder viewHolder = (ViewHolder) holder;
 
         initListeners(viewHolder,position);
-
         initListItem(viewHolder,position);
 
     }
+
+    // Replace the contents of a view (invoked by the layout manager)
+
 
     private void initListeners(ViewHolder viewHolder,final int position){
         viewHolder.add.setOnClickListener(new View.OnClickListener() {
@@ -111,15 +140,7 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
     private void initListItem(ViewHolder viewHolder,final int position){
 
-        if (position==0){
-            viewHolder.alp.setText(String.valueOf(itemsData.get(0).getName().charAt(0)));
-            p = itemsData.get(0).getName().charAt(0);
-        }
-
-        if (itemsData.get(position).getName().charAt(0) != p){
-            viewHolder.alp.setText(String.valueOf(itemsData.get(position).getName().charAt(0)));
-            p = itemsData.get(position).getName().charAt(0);
-        }
+        Log.d("LOL",String.valueOf(itemsData.get(position).getName().charAt(0))+position);
 
         viewHolder.name.setText(itemsData.get(position).getName());
 
@@ -132,7 +153,6 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
         }else{
             Log.d("PHOTO","NULL");
             viewHolder.photo.setImageResource(R.drawable.profile);
-
         }
     }
 
@@ -144,8 +164,6 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
         public TextView number;
 
         public TextView email;
-
-        public TextView alp;
 
         CircleImageView photo;
 
@@ -173,8 +191,15 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<ImportContac
 
             fav = (ImageView) itemLayoutView.findViewById(R.id.img_vip_ici);
 
-            alp = (TextView) itemLayoutView.findViewById(R.id.alpha);
+        }
+    }
 
+    public class SectionHeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView headerTitleTextview;
+
+        public SectionHeaderViewHolder(View itemView) {
+            super(itemView);
+            headerTitleTextview = (TextView) itemView.findViewById(R.id.headerTitleTextview);
         }
     }
 

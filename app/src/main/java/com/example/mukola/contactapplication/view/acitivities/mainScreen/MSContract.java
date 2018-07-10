@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface MSContract {
@@ -23,7 +24,7 @@ public interface MSContract {
 
         void setImportButtonVisible();
 
-        void setContactList(List<Contact> contacts);
+        void setContactList(ArrayList<Contact> contacts);
 
         void openFavorite();
 
@@ -51,5 +52,6 @@ public interface MSContract {
 
         void deleteFRomFavorite(@NonNull int userId,@NonNull Contact contact);
 
+        void getHeaderListLatter(@NonNull ArrayList<Contact> usersList, ArrayList<Contact> mSectionList);
     }
 }

@@ -116,7 +116,7 @@ public class CleanUpActivity extends AppCompatActivity implements CleanUpContrac
         TinderFragment tf = TinderFragment.newInstance(user.getId());
         adapter.addFragment(tf , this.getString(R.string.tinder));
 
-        AllContactsFragment acf = AllContactsFragment.newInstance(user);
+        AllContactsFragment acf = AllContactsFragment.newInstance(user,contacts);
         adapter.addFragment(acf , this.getString(R.string.list));
 
         viewPager.setAdapter(adapter);
@@ -272,7 +272,7 @@ public class CleanUpActivity extends AppCompatActivity implements CleanUpContrac
 
     @Override
     public void openList() {
-        AllContactsFragment af = AllContactsFragment.newInstance(user);
+        AllContactsFragment af = AllContactsFragment.newInstance(user,contacts);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.main_content_c, af)
                 .addToBackStack("ListFragment")

@@ -17,10 +17,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
+import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepository;
+import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetAllCitiesRepository;
 import com.example.mukola.contactapplication.model.repositories.GetAllCitiesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetContactsInCityRepository;
@@ -55,8 +60,11 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
 
     public static final int REQUEST_FINE_LOCATION_PERMISSIONS = 3;
 
+    @NonNull
+    private AddToFavoritesRepository addToFavoritesRepository;
 
-
+    @NonNull
+    private DeleteFromFavoritesRepository deleteFromFavoritesRepository;
 
     @NonNull
     private ReminderContract.IContactView view;
@@ -97,6 +105,8 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
         this.view = view;
         getContactsInCityRepository = new GetContactsInCityRepositoryImpl(context);
         getAllCitiesRepository = new GetAllCitiesRepositoryImpl(context);
+        addToFavoritesRepository = new AddToFavoritesRepositoryImpl(context);
+        deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
         this.context = context;
         this.activity = activity;
         this.userId = userId;
@@ -361,6 +371,66 @@ public class ReminderPresenter implements ReminderContract.IContactPresenter,
     @Override
     public void onContactClicked(@NonNull Contact contact) {
         view.onContactClicked(contact);
+    }
+
+    @Override
+    public void addToFavorite(@NonNull int userId, @NonNull Contact contact) {
+        addToFavoritesRepository.addToFavorites(userId, contact.getId(), new AddToFavoritesRepository.AddToFavoritesCallback() {
+            @Override
+            public void addedSuccessfull() {
+                view.showToast(context.getString(R.string.add_to_favorite));
+            }
+
+            @Override
+            public void notSuccessfull() {
+                view.showToast(context.getString(R.string.error));
+            }
+        });
+    }
+
+    @Override
+    public void deleteFRomFavorite(@NonNull int userId, @NonNull Contact contact) {
+        deleteFromFavoritesRepository.deleteFromFavorites(userId, contact.getId(), new DeleteFromFavoritesRepository.deleteFromFavoritesCallback() {
+            @Override
+            public void deletedSuccessfull() {
+                Log.d("MS DELETED","FROM FAVORITE");
+            }
+
+            @Override
+            public void notSuccessfull() {
+                Log.d("MS NOT DELETED","FROM FAVORITE");
+            }
+        });
+    }
+
+    @Override
+    public void getHeaderListLatter(ArrayList<Contact> usersList,ArrayList<Contact> mSectionList) {
+
+        Collections.sort(usersList, new Comparator<Contact>() {
+            @Override
+            public int compare(Contact user1, Contact user2) {
+                return String.valueOf(user1.getName().charAt(0)).toUpperCase()
+                        .compareTo(String.valueOf(user2.getName().charAt(0)).toUpperCase());
+            }
+        });
+
+        String lastHeader = "";
+
+        int size = usersList.size();
+
+        for (int i = 0; i < size; i++) {
+
+            Contact user = usersList.get(i);
+            String header = String.valueOf(user.getName().charAt(0)).toUpperCase();
+
+            if (!TextUtils.equals(lastHeader, header)) {
+                lastHeader = header;
+
+                mSectionList.add(new Contact(header,true));
+            }
+
+            mSectionList.add(user);
+        }
     }
 
 

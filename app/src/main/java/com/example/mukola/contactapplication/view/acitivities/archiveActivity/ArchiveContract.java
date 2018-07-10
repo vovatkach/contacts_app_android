@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 
 import com.example.mukola.contactapplication.model.models.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ArchiveContract {
     public interface IImportView{
         void showToast(@NonNull String message);
 
-        void setContactList(List<Contact> contacts);
+        void setContactList(ArrayList<Contact> contacts);
 
         void openContact(@NonNull Contact contact);
 
@@ -27,5 +28,8 @@ public interface ArchiveContract {
         void getArchive(@NonNull int userId);
 
         void deleteFromArchive(@NonNull int userId,@NonNull int contactId);
+
+        void getHeaderListLatter(@NonNull ArrayList<Contact> usersList, ArrayList<Contact> mSectionList);
+
     }
 }

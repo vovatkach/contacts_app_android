@@ -16,6 +16,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,6 +34,8 @@ import com.example.mukola.contactapplication.view.acitivities.adapter.ContactLis
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,8 +58,6 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
 
     @BindView(R.id.tv_city_no_contacts)
     TextView tv;
-
-
 
     @BindView(R.id.progressBar_city)
     ProgressBar progressBar;
@@ -81,6 +82,9 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     @NonNull
     private ReminderContract.IContactPresenter presenter;
 
+    private ArrayList<Contact> mSectionList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,6 +101,8 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
         getData();
 
         presenter = new ReminderPresenter(this,this,this,user.getId());
+
+        mSectionList = new ArrayList<>();
 
         presenter.getAllCities();
 
@@ -136,21 +142,21 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     }
 
     @Override
-    public void setContactList(List<Contact> contacts) {
+    public void setContactList(ArrayList<Contact> contacts) {
+        mSectionList.clear();
 
         list.setVisibility(View.VISIBLE);
 
         tv.setVisibility(View.GONE);
 
-        list.setLayoutManager(new LinearLayoutManager(this));
+        presenter.getHeaderListLatter(contacts,mSectionList);
 
         LinearLayoutManager lm = new LinearLayoutManager(this);
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(lm);
 
-        ArrayList<Contact> l = new ArrayList<>(contacts);
 
-        ContactListAdapter mAdapter = new ContactListAdapter(l, this);
+        ContactListAdapter mAdapter = new ContactListAdapter(mSectionList, this);
         // set adapter
         mAdapter.setOnClick(this);
 
@@ -263,7 +269,11 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
 
     @Override
     public void onFavClick(@NonNull Contact contact) {
-
+        if (contact.isFavorite()){
+            presenter.deleteFRomFavorite(user.getId(),contact);
+        }else {
+            presenter.addToFavorite(user.getId(),contact);
+        }
     }
 
     @Override
