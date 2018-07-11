@@ -29,6 +29,8 @@ public interface MSContract {
 
         void openFavorite();
 
+        void openMain();
+
     }
 
     public interface IMainScreenPresenter{
@@ -60,5 +62,7 @@ public interface MSContract {
         int checkFirstStart();
 
         void setUserPreference(User user);
+
+        void logOut();
     }
 }

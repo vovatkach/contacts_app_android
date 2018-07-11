@@ -34,6 +34,7 @@ import com.example.mukola.contactapplication.view.acitivities.cityReminder.Remin
 import com.example.mukola.contactapplication.view.acitivities.cleanUp.CleanUpActivity;
 import com.example.mukola.contactapplication.view.acitivities.contact.ContactActivity;
 import com.example.mukola.contactapplication.view.acitivities.favorite.FavoriteActivity;
+import com.example.mukola.contactapplication.view.acitivities.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -172,6 +173,15 @@ public class MainScreenActivity extends AppCompatActivity
         } else if (id == R.id.nav_clean) {
             presenter.openCleanUp();
 
+        }else if (id == R.id.nav_exit) {
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    presenter.logOut();
+                }
+            }).start();
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -273,6 +283,13 @@ public class MainScreenActivity extends AppCompatActivity
         Intent intent = new Intent(this, FavoriteActivity.class);
         intent.putExtra("user",user);
         startActivity(intent);
+    }
+
+    @Override
+    public void openMain() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
 

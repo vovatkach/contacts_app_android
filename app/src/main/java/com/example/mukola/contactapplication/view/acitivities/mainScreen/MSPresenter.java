@@ -16,6 +16,10 @@ import com.example.mukola.contactapplication.model.repositories.DeleteFromFavori
 import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.GetContactsRepository;
 import com.example.mukola.contactapplication.model.repositories.GetContactsRepositoryImpl;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +33,8 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     @NonNull
     private Activity activity;
 
+    @NonNull
+    private Context context;
 
     @NonNull
     private GetContactsRepository getContactsRepository;
@@ -42,6 +48,7 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     @NonNull
     private ModelPreference modelPreference;
 
+    private GoogleApiClient mGoogleApiClient;
 
 
     public MSPresenter(@NonNull MSContract.IMainScreenView view, @NonNull Activity activity,@NonNull Context context){
@@ -51,6 +58,14 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         addToFavoritesRepository = new AddToFavoritesRepositoryImpl(context);
         deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
         modelPreference = new ModelPreference(context);
+        this.context = context;
+
+        mGoogleApiClient = new GoogleApiClient.Builder(context) //Use app context to prevent leaks using activity
+                //.enableAutoManage(this /* FragmentActivity */, connectionFailedListener)
+                .addApi(Auth.GOOGLE_SIGN_IN_API)
+                .build();
+
+        mGoogleApiClient.connect();
     }
 
     @Override
@@ -183,6 +198,29 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     @Override
     public void setUserPreference(User user) {
         modelPreference.saveUserData(user);
+    }
+
+    @Override
+    public void logOut() {
+
+        modelPreference.firstStartSave(0);
+
+        if (mGoogleApiClient.isConnected()) {
+
+            activity.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                    mGoogleApiClient.disconnect();
+                    mGoogleApiClient.connect();
+                    view.openMain();
+
+                }
+            });
+
+
+        }
     }
 
 }
