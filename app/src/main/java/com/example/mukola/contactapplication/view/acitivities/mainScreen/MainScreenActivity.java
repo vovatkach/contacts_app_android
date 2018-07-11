@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.ModelPreference;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
@@ -84,7 +85,6 @@ public class MainScreenActivity extends AppCompatActivity
 
     private ArrayList<Contact> mSectionList;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,9 +107,15 @@ public class MainScreenActivity extends AppCompatActivity
 
         presenter = new MSPresenter(this,this,this);
 
+        user = getData();
+
+        if(presenter.checkFirstStart() == 0){
+            presenter.setFirstStart();
+            presenter.setUserPreference(user);
+        }
+
         mSectionList = new ArrayList<>();
 
-        user = getData();
 
         initView();
         initRefresh();

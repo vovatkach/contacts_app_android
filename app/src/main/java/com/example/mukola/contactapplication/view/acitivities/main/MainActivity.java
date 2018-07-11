@@ -114,4 +114,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.IMai
         presenter.openRegisterFragment();
     }
 
+    @Override
+    public void openMS(User user) {
+        presenter.openMainScreen(user);
+    }
+
 }

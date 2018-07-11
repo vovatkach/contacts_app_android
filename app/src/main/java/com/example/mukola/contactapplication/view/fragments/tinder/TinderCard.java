@@ -118,7 +118,8 @@ public class TinderCard {
 
         }else if(direction.name().equals(LEFT)|| direction.name().equals(LEFT_BOTTOM )){
 
-            mSwipeView.addView(this);
+            mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
+            mPresenter.addToArchive(mUserId,mPerson);
         }
     }
 
@@ -127,6 +128,7 @@ public class TinderCard {
         Log.d("DEBUG", "SwipeInDirectional " + direction.name());
         if (direction.name().equals(BOTTOM)){
 
+            mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
             mPresenter.addToArchive(mUserId,mPerson);
 
         }else if (direction.name().equals(RIGHT)|| direction.name().equals(RIGHT_BOTTOM)){

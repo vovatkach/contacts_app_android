@@ -4,11 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.ModelPreference;
+import com.example.mukola.contactapplication.model.models.User;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -19,6 +22,8 @@ public class StartFragment extends Fragment {
 
     @NonNull
     private Unbinder unbinder;
+
+    private ModelPreference modelPreference;
 
     private OnStartFragmentInteractionListener mListener;
 
@@ -53,6 +58,15 @@ public class StartFragment extends Fragment {
 
         unbinder = ButterKnife.bind(this,view);
 
+        modelPreference = new ModelPreference(getContext());
+
+        if (modelPreference.firstStartCheck()==1){
+
+            mListener.openMS(modelPreference.getUserData());
+            Log.d("KKKKKKKKK",";LLLLLLLLL");
+
+        }
+
         return view;
     }
 
@@ -79,5 +93,6 @@ public class StartFragment extends Fragment {
     public interface OnStartFragmentInteractionListener {
         void onLoginClick();
         void onRegisterClick();
+        void openMS(User user);
     }
 }

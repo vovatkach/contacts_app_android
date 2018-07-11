@@ -7,7 +7,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.mukola.contactapplication.R;
+import com.example.mukola.contactapplication.model.database.ModelPreference;
 import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToFavoritesRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.DeleteFromFavoritesRepository;
@@ -37,6 +39,9 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
     @NonNull
     private DeleteFromFavoritesRepository deleteFromFavoritesRepository;
 
+    @NonNull
+    private ModelPreference modelPreference;
+
 
 
     public MSPresenter(@NonNull MSContract.IMainScreenView view, @NonNull Activity activity,@NonNull Context context){
@@ -45,6 +50,7 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
         getContactsRepository = new GetContactsRepositoryImpl(context);
         addToFavoritesRepository = new AddToFavoritesRepositoryImpl(context);
         deleteFromFavoritesRepository = new DeleteFromFavoritesRepositoryImpl(context);
+        modelPreference = new ModelPreference(context);
     }
 
     @Override
@@ -162,6 +168,21 @@ public class MSPresenter implements MSContract.IMainScreenPresenter{
 
             mSectionList.add(user);
         }
+    }
+
+    @Override
+    public void setFirstStart() {
+        modelPreference.firstStartSave(1);
+    }
+
+    @Override
+    public int checkFirstStart() {
+        return modelPreference.firstStartCheck();
+    }
+
+    @Override
+    public void setUserPreference(User user) {
+        modelPreference.saveUserData(user);
     }
 
 }
