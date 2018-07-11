@@ -1,5 +1,6 @@
 package com.example.mukola.contactapplication.view.fragments.login;
 
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,10 +16,12 @@ import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
+import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
@@ -26,6 +29,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+
+import static android.app.Activity.RESULT_OK;
 
 
 public class LoginFragment extends Fragment implements LoginContract.IRegisterView{
@@ -40,9 +45,6 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
 
     @Nullable
     private LoginContract.IRegisterPresenter presenter;
-
-    private GoogleSignInClient mGoogleSignInClient;
-
 
     @BindView(R.id.et_email_login)
     EditText etEmail;
@@ -84,7 +86,7 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
 
         unbinder = ButterKnife.bind(this,view);
 
-        presenter = new LoginPresenter(this,getContext(),getActivity());
+        presenter = new LoginPresenter(this,getContext());
 
         initGSO();
 
@@ -111,41 +113,23 @@ public class LoginFragment extends Fragment implements LoginContract.IRegisterVi
     }
 
     private void initGSO(){
-        if (presenter.isOnline()) {
-            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build();
-
-            mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
-        }else {
+        if (!presenter.isOnline()) {
             showToast("Bad internet connection!");
         }
     }
 
     private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        Intent googlePicker = AccountPicker.newChooseAccountIntent(null, null, new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, true, null, null, null, null);
+        startActivityForResult(googlePicker, RC_SIGN_IN);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode==RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                if (requestCode==RC_SIGN_IN){
-                    presenter.firebaseAuthWithGoogleR(account);
-                }
 
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w("TAG", "Google sign in failed", e);
-                // ...
-            }
+        if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK) {
+            String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            presenter.createGoogleUser(accountName);
         }
     }
 

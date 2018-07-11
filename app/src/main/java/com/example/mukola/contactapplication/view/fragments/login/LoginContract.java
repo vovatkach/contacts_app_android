@@ -20,7 +20,7 @@ public interface LoginContract {
         void signInButtonPressed(@NonNull String email,@NonNull String password);
         void detachView();
         void login(@NonNull String email,@NonNull final String password);
-        void firebaseAuthWithGoogleR(GoogleSignInAccount account);
         boolean isOnline();
+        void createGoogleUser(@NonNull String email);
     }
 }

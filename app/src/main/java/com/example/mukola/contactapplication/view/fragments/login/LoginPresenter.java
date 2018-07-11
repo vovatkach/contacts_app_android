@@ -5,6 +5,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
@@ -31,26 +32,17 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
     private Context context;
 
     @NonNull
-    private Activity activity;
-
-    @NonNull
     private GetUserRepository getUserRepository;
 
     @NonNull
     private RegisterRepository registerRepository;
 
-    @NonNull
-    private GoogleSignInRepository googleSignInRepository;
 
-
-    public LoginPresenter (LoginContract.IRegisterView view,@NonNull Context context,@NonNull Activity activity){
+    public LoginPresenter (LoginContract.IRegisterView view,@NonNull Context context){
         this.view = view;
         this.context = context;
-        this.activity = activity;
         getUserRepository = new GetUserRepositoryImpl(context);
         registerRepository = new RegisterRepositoryImpl(context);
-        googleSignInRepository = new GoogleSignInRepositoryImpl(activity);
-
     }
 
 
@@ -71,34 +63,26 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
             @Override
             public void notFound() {
                 if (view != null) {
-                    signOut();
                     view.showToast("User not found!");
                 }
             }
         });
     }
 
+
+
+
     @Override
-    public void firebaseAuthWithGoogleR(GoogleSignInAccount account) {
-        googleSignInRepository.signIn(account, new GoogleSignInRepository.SignInCallback() {
-            @Override
-            public void signIn(@NonNull User user) {
-                view.openMainScreen(user);
-            }
-        });
+    public void createGoogleUser(@NonNull String email) {
+        User user = new User();
+        user.setName(email);
+        user.setNumber(context.getString(R.string.no_phone));
+        user.setAddress(context.getString(R.string.no_address));
+        user.setEmail(email);
+        user.setPassword(new StringBuilder(email).reverse().toString());
+        register(user);
     }
 
-
-    private void handleSignIn(GoogleSignInAccount account) {
-            User user = new User();
-            user.setName(account.getDisplayName());
-            user.setEmail(account.getEmail());
-            user.setPassword(account.getId());
-            user.setNumber(account.getFamilyName());
-            user.setAddress(account.getGivenName());
-            register(user);
-            Log.d("Google email",account.getEmail());
-    }
 
     private void register(@NonNull final User user) {
         getUserRepository.getUser(user.getEmail(), new GetUserRepository.GetUserCallback() {
@@ -177,9 +161,6 @@ public class LoginPresenter implements LoginContract.IRegisterPresenter {
         }
     }
 
-    private void signOut() {
-       googleSignInRepository.logOut();
-    }
 
 
 

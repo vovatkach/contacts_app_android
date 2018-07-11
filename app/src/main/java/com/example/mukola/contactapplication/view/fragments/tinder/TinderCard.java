@@ -116,7 +116,7 @@ public class TinderCard {
             mPresenter.addToContacts(mUserId,mPerson);
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
 
-        }else if(direction.name().equals(LEFT)){
+        }else if(direction.name().equals(LEFT)|| direction.name().equals(LEFT_BOTTOM )){
 
             mSwipeView.addView(this);
         }
@@ -125,12 +125,11 @@ public class TinderCard {
     @SwipeInDirectional
     private void onSwipeInDirectional(SwipeDirection direction) {
         Log.d("DEBUG", "SwipeInDirectional " + direction.name());
-        if (direction.name().equals(BOTTOM) || direction.name().equals(LEFT_BOTTOM)
-                || direction.name().equals(RIGHT_BOTTOM)){
-            mPerson.setFavorite(true);
-            mPresenter.addToContacts(mUserId,mPerson);
-            mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
-        }else if (direction.name().equals(RIGHT)){
+        if (direction.name().equals(BOTTOM)){
+
+            mPresenter.addToArchive(mUserId,mPerson);
+
+        }else if (direction.name().equals(RIGHT)|| direction.name().equals(RIGHT_BOTTOM)){
             mPresenter.addToContacts(mUserId,mPerson);
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
         }

@@ -7,6 +7,8 @@ import android.view.View;
 import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.database.PhotoSaver;
 import com.example.mukola.contactapplication.model.models.Contact;
+import com.example.mukola.contactapplication.model.repositories.AddToArchiveRepository;
+import com.example.mukola.contactapplication.model.repositories.AddToArchiveRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRepository;
 import com.example.mukola.contactapplication.model.repositories.AddToBlacklistRepositoryImpl;
 import com.example.mukola.contactapplication.model.repositories.AddToContactsRepository;
@@ -35,7 +37,8 @@ public class TinderPresenter implements TinderContract.ITinderPresenter {
     @NonNull
     private GetBlacklistRepository getBlacklistRepository;
 
-
+    @NonNull
+    private AddToArchiveRepository addToArchiveRepository;
     @NonNull
     private PhotoSaver photoSaver;
 
@@ -45,6 +48,7 @@ public class TinderPresenter implements TinderContract.ITinderPresenter {
         addToContactsRepository = new AddToContactsRepositoryImpl(context);
         addToBlacklistRepository = new AddToBlacklistRepositoryImpl(context);
         getBlacklistRepository = new GetBlacklistRepositoryImpl(context);
+        addToArchiveRepository = new AddToArchiveRepositoryImpl(context);
         photoSaver = new PhotoSaver(context);
     }
 
@@ -56,6 +60,21 @@ public class TinderPresenter implements TinderContract.ITinderPresenter {
     @Override
     public void initTab(View view) {
         this.view.initTab(view);
+    }
+
+    @Override
+    public void addToArchive(@NonNull int userId,@NonNull Contact contact){
+        addToArchiveRepository.addToArchive(userId, contact, new AddToArchiveRepository.addToArchiveCallback() {
+            @Override
+            public void addedSuccessfull() {
+                view.showToast(context.getString(R.string.arc_successfull));
+            }
+
+            @Override
+            public void notSuccessfull() {
+                view.showToast(context.getString(R.string.error));
+            }
+        });
     }
 
     @Override

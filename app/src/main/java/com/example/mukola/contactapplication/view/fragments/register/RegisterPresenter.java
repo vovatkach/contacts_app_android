@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.EditText;
 
+import com.example.mukola.contactapplication.R;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepository;
 import com.example.mukola.contactapplication.model.repositories.GetUserRepositoryImpl;
@@ -38,37 +39,33 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     @NonNull
     private GetUserRepository getUserRepository;
 
-    @NonNull
-    private GoogleSignInClient mGoogleSignInClient;
 
-    @NonNull
-    private GoogleSignInRepository googleSignInRepository;
-
-    @NonNull
-    private Activity activity;
-
-
-
-    public RegisterPresenter (@NonNull RegisterContract.IRegisterView view, @NonNull Context context,@NonNull Activity activity){
+    public RegisterPresenter (@NonNull RegisterContract.IRegisterView view, @NonNull Context context){
         this.view = view;
         this.context = context;
-        this.activity = activity;
         registerRepository = new RegisterRepositoryImpl(context);
         getUserRepository = new GetUserRepositoryImpl(context);
-        googleSignInRepository = new GoogleSignInRepositoryImpl(activity);
 
     }
 
 
     @Override
-    public void register(@NonNull final User user, final String type) {
-        getUserRepository.getUser(user.getEmail(), new GetUserRepository.GetUserCallback() {
+    public void register(@NonNull final User user1, final String type) {
+        getUserRepository.getUser(user1.getEmail(), new GetUserRepository.GetUserCallback() {
             @Override
             public void foundUser(@NonNull User user) {
                 if (type.equals("google")){
-                    if (view!=null) {
-                        view.openMainScreen(user);
+
+                    if (user.getPassword().equals(new StringBuilder(user.getEmail()).reverse().toString())){
+
+                        if (view!=null) {
+                            view.openMainScreen(user);
+                        }
+
+                    }else {
+                        view.showToast("You already have account with this email!");
                     }
+
                 }else {
                     if (view != null) {
                         view.showToast("Current user is already exists!");
@@ -78,17 +75,7 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
 
             @Override
             public void notFound() {
-                registerUser(user);
-            }
-        });
-    }
-
-    @Override
-    public void firebaseAuthWithGoogleR(GoogleSignInAccount account) {
-        googleSignInRepository.signIn(account, new GoogleSignInRepository.SignInCallback() {
-            @Override
-            public void signIn(@NonNull User user) {
-                view.openMainScreen(user);
+                registerUser(user1);
             }
         });
     }
@@ -141,6 +128,17 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
     }
 
     @Override
+    public void createGoogleUser(@NonNull String email) {
+        User user = new User();
+        user.setName(email);
+        user.setNumber(context.getString(R.string.no_phone));
+        user.setAddress(context.getString(R.string.no_address));
+        user.setEmail(email);
+        user.setPassword(new StringBuilder(email).reverse().toString());
+        register(user,"google");
+    }
+
+    @Override
     public void openSignIn() {
         view.signInTvPressed();
     }
@@ -189,10 +187,5 @@ public class RegisterPresenter implements RegisterContract.IRegisterPresenter {
 
         return false;
     }
-
-    private void signOut() {
-        googleSignInRepository.logOut();
-    }
-
 
 }

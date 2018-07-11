@@ -28,6 +28,8 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.api.services.people.v1.People;
 import com.google.api.services.people.v1.model.ListConnectionsResponse;
 import com.google.api.services.people.v1.model.Person;
@@ -51,10 +53,10 @@ public class CleanUpPresenter implements CleanUpContract.ICleanUpPresenter {
     private CleanUpContract.ICleanUpView view;
 
     @NonNull
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
     @NonNull
-    Activity activity;
+    private Activity activity;
 
     @NonNull
     private Context context;
@@ -445,4 +447,6 @@ public class CleanUpPresenter implements CleanUpContract.ICleanUpPresenter {
             return null;
         }
     }
+
+
 }

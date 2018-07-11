@@ -19,10 +19,10 @@ public interface RegisterContract {
 
     public interface IRegisterPresenter{
         void createUser(@NonNull List<EditText> list);
+        void createGoogleUser(@NonNull String email);
         void openSignIn();
         void detachView();
         void register(@NonNull final User user,String type);
-        void firebaseAuthWithGoogleR(GoogleSignInAccount account);
         boolean isOnline();
 
     }

@@ -31,5 +31,8 @@ public interface TinderContract {
 
         void getBlackList(@NonNull int userId);
 
+        void addToArchive(@NonNull int userId,@NonNull Contact contact);
+
+
     }
 }
