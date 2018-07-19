@@ -105,13 +105,6 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
         setContentView(R.layout.activity_contact);
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_c);
-        setSupportActionBar(toolbar);
-        toolbar.setSubtitleTextColor(Color.WHITE);
-
-        setTitle(getString(R.string.contact_details));
-
-
         presenter = new ContactPresenter(this,this,this);
 
         getData();

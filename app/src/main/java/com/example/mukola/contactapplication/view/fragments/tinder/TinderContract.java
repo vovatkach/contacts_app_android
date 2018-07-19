@@ -9,18 +9,14 @@ import java.util.ArrayList;
 
 public interface TinderContract {
     interface ITinderView{
-
         void showToast(@NonNull String message);
 
         void initTab(View view);
 
         void setBlacklist(@NonNull ArrayList<String> blacklist);
-
-
     }
 
     interface ITinderPresenter{
-
         void detachView();
 
         void initTab(View view);
@@ -33,6 +29,6 @@ public interface TinderContract {
 
         void addToArchive(@NonNull int userId,@NonNull Contact contact);
 
-
+        void showToast(@NonNull String message);
     }
 }

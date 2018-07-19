@@ -115,11 +115,14 @@ public class TinderCard {
             mPerson.setFavorite(true);
             mPresenter.addToContacts(mUserId,mPerson);
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
+            mPresenter.showToast(mContext.getString(R.string.add_to_favorite));
 
         }else if(direction.name().equals(LEFT)|| direction.name().equals(LEFT_BOTTOM )){
 
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
             mPresenter.addToArchive(mUserId,mPerson);
+            mPresenter.showToast(mContext.getString(R.string.arc_successfull));
+
         }
     }
 
@@ -130,10 +133,13 @@ public class TinderCard {
 
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
             mPresenter.addToArchive(mUserId,mPerson);
+            mPresenter.showToast(mContext.getString(R.string.arc_successfull));
 
         }else if (direction.name().equals(RIGHT)|| direction.name().equals(RIGHT_BOTTOM)){
             mPresenter.addToContacts(mUserId,mPerson);
             mPresenter.addToBlackList(mUserId,mPerson.getBlacklistId());
+            mPresenter.showToast(mContext.getString(R.string.add_successfull));
+
         }
     }
 }

@@ -78,6 +78,11 @@ public class TinderPresenter implements TinderContract.ITinderPresenter {
     }
 
     @Override
+    public void showToast(@NonNull String message) {
+        view.showToast(message);
+    }
+
+    @Override
     public void addToContacts(@NonNull int userId, @NonNull final Contact contact) {
         addToContactsRepository.addToContacts(userId, contact, new AddToContactsRepository.addToContactsCallback() {
             @Override

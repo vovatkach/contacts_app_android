@@ -114,7 +114,7 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
     @Override
     public void showToast(@NonNull String message) {
-        Toast.makeText(getActivity(),message,Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -141,7 +141,7 @@ public class MainScreenActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                presenter.openCreateContact();
+                presenter.openCleanUp();
             }
         });
     }
