@@ -31,6 +31,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 
 public class AllContactsFragment extends Fragment implements  AllContactsContract.IAllContactsView,
@@ -39,7 +40,7 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 {
 
     @BindView(R.id.rv_contacts_af)
-    RecyclerView list;
+    IndexFastScrollRecyclerView list;
 
     @BindView(R.id.tv_no_contact_af)
     TextView tv;
@@ -139,48 +140,58 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
 
     @Override
     public void setContactList(ArrayList<Contact> contacts) {
-
-            if (blacklist!=null) {
-                conteiner.clear();
-                for (Contact c : contacts) {
-                    boolean b = false;
-                    for (String s : blacklist) {
-                        if (c.getBlacklistId().equals(s)) {
-                            b = true;
-                        }
-                    }
-                    if (!b){
-                        conteiner.add(c);
+        if (blacklist!=null) {
+            conteiner.clear();
+            for (Contact c : contacts) {
+                boolean b = false;
+                for (String s : blacklist) {
+                    if (c.getBlacklistId().equals(s)) {
+                        b = true;
                     }
                 }
-                mSectionList.clear();
-
-                presenter.getHeaderListLatter(conteiner,mSectionList);
-
-            }else{
-
-                mSectionList.clear();
-
-                presenter.getHeaderListLatter(contacts,mSectionList);
+                if (!b){
+                    conteiner.add(c);
+                }
             }
+            mSectionList.clear();
 
+            presenter.getHeaderListLatter(conteiner,mSectionList);
 
-        list.setVisibility(View.VISIBLE);
-        tv.setVisibility(View.GONE);
-        list.setLayoutManager(new LinearLayoutManager(getActivity()));
+        }else{
 
-        LinearLayoutManager lm = new LinearLayoutManager(getActivity());
-        lm.setOrientation(LinearLayoutManager.VERTICAL);
-        list.setLayoutManager(lm);
+            mSectionList.clear();
 
-        ImportContactsListAdapter mAdapter = new ImportContactsListAdapter(mSectionList,getContext());
-        // set adapter
-        mAdapter.setOnClick(this);
+            presenter.getHeaderListLatter(contacts,mSectionList);
+        }
 
-        list.setAdapter(mAdapter);
+        if (conteiner.isEmpty()) {
 
-        // set item animator to DefaultAnimator
-        list.setItemAnimator(new DefaultItemAnimator());
+                setAllAreImported();
+
+        }else  if(contacts.isEmpty() && conteiner.isEmpty()){
+
+            setImportButtonVisible();
+
+        }else{
+            list.setIndexBarColor("#3f7ba6");
+            list.setIndexbarWidth(40);
+            list.setVisibility(View.VISIBLE);
+            tv.setVisibility(View.GONE);
+            list.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            LinearLayoutManager lm = new LinearLayoutManager(getActivity());
+            lm.setOrientation(LinearLayoutManager.VERTICAL);
+            list.setLayoutManager(lm);
+
+            ImportContactsListAdapter mAdapter = new ImportContactsListAdapter(mSectionList, getContext());
+            // set adapter
+            mAdapter.setOnClick(this);
+
+            list.setAdapter(mAdapter);
+
+            // set item animator to DefaultAnimator
+            list.setItemAnimator(new DefaultItemAnimator());
+        }
     }
 
 
@@ -219,6 +230,7 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
     public void onAddClick(@NonNull Contact contact) {
         presenter.addToContact(user.getId(),contact);
         presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        mListener.refreshTinder();
         initList();
     }
 
@@ -227,13 +239,16 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
         contact.setFavorite(true);
         presenter.addToContact(user.getId(),contact);
         presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        mListener.refreshTinder();
         initList();
+
     }
 
     @Override
     public void onArchiveClick(@NonNull Contact contact) {
         presenter.addToArchive(user.getId(),contact);
         presenter.addToBlackList(user.getId(),contact.getBlacklistId());
+        mListener.refreshTinder();
         initList();
     }
 
@@ -267,10 +282,17 @@ public class AllContactsFragment extends Fragment implements  AllContactsContrac
        presenter.openContact(contact);
     }
 
+    private void setAllAreImported(){
+        list.setVisibility(View.GONE);
+        tv.setText(getActivity().getString(R.string.all_imported));
+        tv.setVisibility(View.VISIBLE);
+    }
+
     public interface OnAllContactsFragmentInteractionListener {
 
         void onAllContactsFragmentOpenContract(@NonNull Contact contact);
 
+        void refreshTinder();
     }
 
 }

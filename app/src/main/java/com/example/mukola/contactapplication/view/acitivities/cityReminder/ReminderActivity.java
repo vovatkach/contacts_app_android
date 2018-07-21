@@ -41,13 +41,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class ReminderActivity extends AppCompatActivity implements ReminderContract.IContactView,
                                     ContactListAdapter.OnItemClicked
 {
 
     @BindView(R.id.rv_city_contact)
-    RecyclerView list;
+    IndexFastScrollRecyclerView list;
 
 
     @BindView(R.id.spinner_cities)
@@ -144,7 +145,8 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     @Override
     public void setContactList(ArrayList<Contact> contacts) {
         mSectionList.clear();
-
+        list.setIndexBarColor("#3f7ba6");
+        list.setIndexbarWidth(40);
         list.setVisibility(View.VISIBLE);
 
         tv.setVisibility(View.GONE);
@@ -280,6 +282,8 @@ public class ReminderActivity extends AppCompatActivity implements ReminderContr
     public void onUserClick(@NonNull Contact contact) {
         presenter.onContactClicked(contact);
     }
+
+
 
 
 }

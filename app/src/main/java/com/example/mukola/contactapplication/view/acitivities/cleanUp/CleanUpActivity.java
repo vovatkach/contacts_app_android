@@ -109,11 +109,12 @@ public class CleanUpActivity extends AppCompatActivity implements CleanUpContrac
         tabLayout.setupWithViewPager(viewPager);
     }
 
+    TinderFragment tf;
     private void setupViewPager(ViewPager viewPager) {
 
         adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        TinderFragment tf = TinderFragment.newInstance(user.getId());
+         tf = TinderFragment.newInstance(user.getId());
         adapter.addFragment(tf , this.getString(R.string.tinder));
 
         AllContactsFragment acf = AllContactsFragment.newInstance(user,contacts);
@@ -282,6 +283,11 @@ public class CleanUpActivity extends AppCompatActivity implements CleanUpContrac
     @Override
     public void onAllContactsFragmentOpenContract(@NonNull Contact contact) {
         presenter.openContact(contact);
+    }
+
+    @Override
+    public void refreshTinder() {
+        tf.update();
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

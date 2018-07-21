@@ -1,6 +1,7 @@
 package com.example.mukola.contactapplication.view.acitivities.mainScreen;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,17 +16,15 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mukola.contactapplication.R;
-import com.example.mukola.contactapplication.model.database.ModelPreference;
 import com.example.mukola.contactapplication.model.models.Contact;
 import com.example.mukola.contactapplication.model.models.User;
 import com.example.mukola.contactapplication.view.acitivities.adapter.ContactListAdapter;
@@ -39,11 +38,14 @@ import com.example.mukola.contactapplication.view.acitivities.main.MainActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 
 public class MainScreenActivity extends AppCompatActivity
@@ -51,7 +53,7 @@ public class MainScreenActivity extends AppCompatActivity
          ContactListAdapter.OnItemClicked {
 
     @BindView(R.id.rv_contacts_ms)
-    RecyclerView list;
+    IndexFastScrollRecyclerView list;
 
     @BindView(R.id.tv_no_contact_ms)
     TextView tv;
@@ -120,6 +122,7 @@ public class MainScreenActivity extends AppCompatActivity
 
         initView();
         initRefresh();
+
 
         presenter.getContacts(user.getId());
         Log.d("Logined users email - ", user.getEmail());
@@ -245,7 +248,8 @@ public class MainScreenActivity extends AppCompatActivity
 
     @Override
     public void setContactList(ArrayList<Contact> contacts) {
-
+        list.setIndexBarColor("#3f7ba6");
+        list.setIndexbarWidth(40);
         onItemsLoadComplete();
         list.setVisibility(View.VISIBLE);
         btn.setVisibility(View.GONE);
@@ -258,6 +262,7 @@ public class MainScreenActivity extends AppCompatActivity
         LinearLayoutManager lm = new LinearLayoutManager(this);
         lm.setOrientation(LinearLayoutManager.VERTICAL);
         list.setLayoutManager(lm);
+
 
         ContactListAdapter mAdapter = new ContactListAdapter(mSectionList, this);
         // set adapter
@@ -308,6 +313,8 @@ public class MainScreenActivity extends AppCompatActivity
     }
 
 
+
+
     private void initRefresh(){
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -328,6 +335,9 @@ public class MainScreenActivity extends AppCompatActivity
 
         swipeRefreshLayout.setRefreshing(false);
     }
+
+
+
 }
 
 

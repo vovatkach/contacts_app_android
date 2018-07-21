@@ -98,13 +98,15 @@ public class ContactActivity extends AppCompatActivity implements ContactContrac
     private User user;
 
     private int indicator = 1;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
         ButterKnife.bind(this);
-
+        toolbar = (Toolbar) findViewById(R.id.toolbar_c);
+        setSupportActionBar(toolbar);
         presenter = new ContactPresenter(this,this,this);
 
         getData();

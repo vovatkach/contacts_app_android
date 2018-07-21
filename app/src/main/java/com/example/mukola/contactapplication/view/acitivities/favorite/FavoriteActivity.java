@@ -28,11 +28,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class FavoriteActivity extends AppCompatActivity implements FavoritContract.IFavoriteView, ContactListAdapter.OnItemClicked {
 
     @BindView(R.id.rv_contacts_af)
-    RecyclerView list;
+    IndexFastScrollRecyclerView list;
 
     @BindView(R.id.tv_no_contact_af)
     TextView tv;
@@ -88,7 +89,8 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     public void setContactList(ArrayList<Contact> contacts) {
 
         mSectionList.clear();
-
+        list.setIndexBarColor("#3f7ba6");
+        list.setIndexbarWidth(40);
         presenter.getHeaderListLatter(contacts,mSectionList);
 
         list.setVisibility(View.VISIBLE);
@@ -132,7 +134,6 @@ public class FavoriteActivity extends AppCompatActivity implements FavoritContra
     public void onUserClick(@NonNull Contact contact) {
         presenter.onContactClicked(contact);
     }
-
 
     @Override
     public void onContactClicked(@NonNull Contact contact) {

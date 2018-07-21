@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:layout_marginRight="15dp">
 
     <TextView
         android:id="@+id/headerTitleTextview"

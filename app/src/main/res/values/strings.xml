@@ -80,7 +80,7 @@
     <string name="cancel">Cancel</string>
     <string name="favorites">Favorites</string>
     <string name="contacts">Contacts</string>
-
+    <string name="all_imported">All contacts have already been imported</string>
     <string name="no_arc_contact">You have no contacts in archive</string>
 
 

@@ -25,7 +25,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 
-public class TinderFragment extends Fragment implements TinderContract.ITinderView {
+public class TinderFragment extends Fragment implements TinderContract.ITinderView ,Updateable{
 
 
     @NonNull
@@ -56,18 +56,17 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
     @BindView(R.id.progressBar_tind)
     ProgressBar progressBar;
 
+    View v;
+
     public TinderFragment() {
         // Required empty public constructor
     }
-
 
     public static TinderFragment newInstance(int userId) {
         TinderFragment fragment = new TinderFragment();
         fragment.setUserId(userId);
         return fragment;
     }
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,13 +82,15 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                 tv.setVisibility(View.VISIBLE);
                 tv.setText(getString(R.string.no_contact));
             }else {
+                mSwipeView = (SwipeDirectionalView) view.findViewById(R.id.swipeView);
+                mContext = getActivity().getApplicationContext();
                 tv.setVisibility(View.GONE);
                 presenter.initTab(view);
             }
+            v = view;
 
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -101,7 +102,6 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                     + " must implement OnTinderFragmentInteractionListener");
         }
     }
-
 
     @Override
     public void onDetach() {
@@ -119,10 +119,7 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
     @Override
     public void initTab(final View view) {
-        mSwipeView = (SwipeDirectionalView) view.findViewById(R.id.swipeView);
-
-        mContext = getActivity().getApplicationContext();
-
+        presenter.getBlackList(userId);
         mSwipeView.getBuilder()
                 .setDisplayViewCount(3)
                 .setSwipeDecor(new SwipeDecor()
@@ -131,15 +128,8 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                         .setSwipeInMsgLayoutId(R.layout.tinder_swipe_in_msg_view)
                         .setSwipeOutMsgLayoutId(R.layout.tinder_swipe_out_msg_view));
 
-
-
-
         for(Contact person : ((CleanUpActivity) getActivity()).getContacts()){
-
-            presenter.getBlackList(userId);
-
             boolean indicator = false;
-
             if (mBlacklist!=null) {
                 for (String s : mBlacklist) {
                     if (person.getBlacklistId().equals(s)) {
@@ -147,12 +137,10 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
                     }
                 }
             }
-
             if (!indicator) {
                 mSwipeView.addView(new TinderCard(mContext, person, mSwipeView, presenter, userId));
             }
         }
-
         view.findViewById(R.id.rejectBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +164,11 @@ public class TinderFragment extends Fragment implements TinderContract.ITinderVi
 
     public void setUserId(@NonNull int userId) {
         this.userId = userId;
+    }
+
+    @Override
+    public void update() {
+        //initTab(v);
     }
 
     public interface OnTinderFragmentInteractionListener {

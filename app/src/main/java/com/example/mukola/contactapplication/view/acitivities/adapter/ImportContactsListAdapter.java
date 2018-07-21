@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.example.mukola.contactapplication.R;
@@ -18,10 +19,11 @@ import com.example.mukola.contactapplication.model.models.Contact;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ImportContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ImportContactsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  implements SectionIndexer {
 
     private ArrayList<Contact> itemsData;
 
@@ -35,6 +37,45 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<RecyclerView
 
     private PhotoSaver photoSaver;
 
+    private ArrayList<Integer> mSectionPositions;
+
+    private List<String> mDataArray;
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>(26);
+        mSectionPositions = new ArrayList<>(26);
+        for (int i = 0, size = mDataArray.size(); i < size; i++) {
+            String section = String.valueOf(mDataArray.get(i).charAt(0)).toUpperCase();
+            if (!sections.contains(section)) {
+                sections.add(section);
+                mSectionPositions.add(i);
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int i) {
+        int x = 0,y = 0;
+        for (Contact c:itemsData) {
+            if (c.isSectioned()){
+                x++;
+            }
+            if (x==i+1){
+                i = y;
+                break;
+            }
+            y++;
+        }
+        return i;
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return 0;
+    }
+
+
     public interface OnItemClicked {
         void onAddClick(@NonNull Contact contact);
         void onFavoriteClick(@NonNull Contact contact);
@@ -46,7 +87,12 @@ public class ImportContactsListAdapter extends RecyclerView.Adapter<RecyclerView
         this.itemsData = itemsData;
         photoSaver = new PhotoSaver(context);
         this.mContextWeakReference = new WeakReference<Context>(context);
-
+        mDataArray = new ArrayList<>();
+        for (Contact c: itemsData) {
+            if (!c.isSectioned()){
+                mDataArray.add(c.getName());
+            }
+        }
     }
 
     @Override

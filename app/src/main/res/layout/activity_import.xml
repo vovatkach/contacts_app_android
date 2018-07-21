@@ -62,7 +62,7 @@
                 android:layout_weight="1.6"
                 android:orientation="vertical">
 
-                <android.support.v7.widget.RecyclerView
+                <in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView
                     android:id="@+id/rv_contacts_is"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

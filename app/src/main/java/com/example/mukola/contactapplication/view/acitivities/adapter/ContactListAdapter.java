@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.example.mukola.contactapplication.R;
@@ -17,10 +18,12 @@ import com.example.mukola.contactapplication.model.models.Contact;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
-public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements SectionIndexer {
 
     private ArrayList<Contact> itemsData;
 
@@ -36,6 +39,45 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     WeakReference<Context> mContextWeakReference;
 
+    private ArrayList<Integer> mSectionPositions;
+
+    private List<String> mDataArray;
+
+    @Override
+    public Object[] getSections() {
+        List<String> sections = new ArrayList<>(26);
+        mSectionPositions = new ArrayList<>(26);
+        for (int i = 0, size = mDataArray.size(); i < size; i++) {
+            String section = String.valueOf(mDataArray.get(i).charAt(0)).toUpperCase();
+            if (!sections.contains(section)) {
+                sections.add(section);
+                mSectionPositions.add(i);
+            }
+        }
+        return sections.toArray(new String[0]);
+    }
+
+    @Override
+    public int getPositionForSection(int i) {
+        int x = 0,y = 0;
+        for (Contact c:itemsData) {
+           if (c.isSectioned()){
+               x++;
+           }
+           if (x==i+1){
+               i = y;
+               break;
+           }
+           y++;
+        }
+        return i;
+    }
+
+    @Override
+    public int getSectionForPosition(int i) {
+        return 0;
+    }
+
 
     public interface OnItemClicked {
         void onFavClick(@NonNull Contact contact);
@@ -46,7 +88,13 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         this.itemsData = itemsData;
         this.context = context;
         photoSaver = new PhotoSaver(context);
+        mDataArray = new ArrayList<>();
         this.mContextWeakReference = new WeakReference<Context>(context);
+        for (Contact c: itemsData) {
+            if (!c.isSectioned()){
+                mDataArray.add(c.getName());
+            }
+        }
     }
 
     @Override
@@ -101,6 +149,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             @Override
             public void onClick(View v) {
 
+                Log.d("CLICK",""+position);
                 onClick.onFavClick(itemsData.get(position));
                 if (itemsData.get(position).isFavorite()){
                     viewHolder.fav.setImageResource(R.drawable.ic_star_border_black_24dp);
@@ -150,6 +199,7 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if ( itemsData.get(position).getPhotoUrl()!=null && !itemsData.get(position).getPhotoUrl().equals("null")) {
           viewHolder.photo.setImageBitmap(photoSaver.loadImageFromStorage(itemsData.get(position).getPhotoUrl()));
         }else{
+            viewHolder.photo.setImageDrawable(context.getResources().getDrawable(R.drawable.profile));
             Log.d("PHOTO","NULL");
         }
     }
@@ -166,6 +216,8 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         CircleImageView photo;
 
         ImageView fav;
+
+
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
@@ -210,6 +262,4 @@ public class ContactListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, itemsData.size());
     }
-
-
 }

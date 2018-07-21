@@ -8,13 +8,13 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
+        android:layout_weight="0.2"
    >
 
         <android.support.v4.widget.SwipeRefreshLayout
@@ -30,7 +30,7 @@
 
 
 
-                <android.support.v7.widget.RecyclerView
+                <in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView
                     android:id="@+id/rv_contacts_ms"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

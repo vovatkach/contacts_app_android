@@ -26,6 +26,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import in.myinnos.alphabetsindexfastscrollrecycler.IndexFastScrollRecyclerView;
 
 public class ArchiveActivity extends AppCompatActivity implements ArchiveContract.IImportView,ArchiveListAdapter.OnItemClicked
 
@@ -34,7 +35,7 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
 {
 
     @BindView(R.id.rv_contacts_is)
-    RecyclerView list;
+    IndexFastScrollRecyclerView list;
 
     @BindView(R.id.tv_no_contact_is)
     TextView tv;
@@ -98,6 +99,8 @@ public class ArchiveActivity extends AppCompatActivity implements ArchiveContrac
            tv.setVisibility(View.VISIBLE);
 
         } else {
+            list.setIndexBarColor("#3f7ba6");
+            list.setIndexbarWidth(40);
             mSectionList.clear();
 
             presenter.getHeaderListLatter(contacts,mSectionList);
